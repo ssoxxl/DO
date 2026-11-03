@@ -1,10 +1,11 @@
 // Web Audio API를 활용한 무음원 자체 합성 사운드 엔진
-// 외부 mp3 파일 없이 브라우저 자체 오디오 신시사이저로 100% 작동
+// 카톡 알림음, 타임어택 째깍음, 스티커 붙이기, 심장 박동 등 리얼 효과음 탑재
 class SoundController {
     constructor() {
         this.ctx = null;
         this.isMuted = false;
         this.heartbeatTimer = null;
+        this.tickTimer = null;
     }
 
     init() {
@@ -21,17 +22,99 @@ class SoundController {
 
     toggleMute() {
         this.isMuted = !this.isMuted;
-        if (this.isMuted && this.heartbeatTimer) {
-            clearInterval(this.heartbeatTimer);
-            this.heartbeatTimer = null;
+        if (this.isMuted) {
+            this.stopHeartbeatLoop();
+            this.stopTickTimer();
         }
         return this.isMuted;
     }
 
-    // 1. 심장 박동 저음 (두근... 두근...)
+    // 1. 카톡/DM 메시지 수신음 (띠링~ 상큼한 2음)
+    playMessagePop() {
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now); // A5
+        osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.25);
+    }
+
+    // 2. 내가 답장 보낼 때 소리 (톡!)
+    playSendClick() {
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.05);
+    }
+
+    // 3. 스티커 붙이기 / 도형 터치 소리 (착! / 찰칵)
+    playStickerSnap() {
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, now);
+        osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.1);
+    }
+
+    // 4. 타임어택 긴급 초시계 째깍 (째깍- 째깍-)
+    playTick() {
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(900, now);
+
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.03);
+    }
+
+    // 5. 심장 박동 저음 (두근... 두근...)
     playHeartbeat() {
         if (this.isMuted || !this.ctx) return;
-        
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
@@ -49,7 +132,6 @@ class SoundController {
         osc.start(now);
         osc.stop(now + 0.22);
 
-        // 두 번째 박동 (더블 비트)
         setTimeout(() => {
             if (this.isMuted || !this.ctx) return;
             const now2 = this.ctx.currentTime;
@@ -88,7 +170,7 @@ class SoundController {
         }
     }
 
-    // 2. 멘탈 타격음 (쿵! 노이즈+저음)
+    // 6. 멘탈 타격음 (쿵!)
     playDamage() {
         if (this.isMuted || !this.ctx) return;
         const now = this.ctx.currentTime;
@@ -96,7 +178,7 @@ class SoundController {
         const gain = this.ctx.createGain();
 
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.setValueAtTime(140, now);
         osc.frequency.exponentialRampToValueAtTime(20, now + 0.3);
 
         gain.gain.setValueAtTime(0.6, now);
@@ -109,7 +191,7 @@ class SoundController {
         osc.stop(now + 0.3);
     }
 
-    // 3. 의심도 상승 띵- 소리 (직관/눈치 발동)
+    // 7. 의심도 상승 띵!
     playDoubtUp() {
         if (this.isMuted || !this.ctx) return;
         const now = this.ctx.currentTime;
@@ -130,7 +212,7 @@ class SoundController {
         osc.stop(now + 0.35);
     }
 
-    // 4. 지갑 돈 뜯기는 소리 (찰랑~)
+    // 8. 돈 뜯김 소리
     playMoneyLost() {
         if (this.isMuted || !this.ctx) return;
         const now = this.ctx.currentTime;
@@ -154,28 +236,26 @@ class SoundController {
         });
     }
 
-    // 5. 아이템 사용 효과음 (쉬익- 치트키 발동)
-    playItemUse() {
+    // 9. 연타 클릭 성공음
+    playTapSuccess() {
         if (this.isMuted || !this.ctx) return;
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
 
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(220, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.25);
-
-        gain.gain.setValueAtTime(0.3, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440 + Math.random() * 200, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
 
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.08);
     }
 
-    // 6. 글리치 / 기괴한 노이즈
+    // 10. 글리치 노이즈
     playGlitch() {
         if (this.isMuted || !this.ctx) return;
         const now = this.ctx.currentTime;
@@ -206,7 +286,32 @@ class SoundController {
         noise.stop(now + 0.25);
     }
 
-    // 7. 게임오버 / 세뇌 완료 (우울한 디센딩)
+    // 11. 승리 팬파레
+    playVictory() {
+        this.stopHeartbeatLoop();
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const time = now + idx * 0.12;
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, time);
+
+            gain.gain.setValueAtTime(0.3, time);
+            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start(time);
+            osc.stop(time + 0.4);
+        });
+    }
+
+    // 12. 게임 오버
     playGameOver() {
         this.stopHeartbeatLoop();
         if (this.isMuted || !this.ctx) return;
@@ -228,31 +333,6 @@ class SoundController {
 
             osc.start(time);
             osc.stop(time + 0.35);
-        });
-    }
-
-    // 8. 승리 / 탈출 팬파레 (희망찬 아르페지오)
-    playVictory() {
-        this.stopHeartbeatLoop();
-        if (this.isMuted || !this.ctx) return;
-        const now = this.ctx.currentTime;
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-        notes.forEach((freq, idx) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            const time = now + idx * 0.12;
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, time);
-
-            gain.gain.setValueAtTime(0.3, time);
-            gain.gain.exponentialRampToValueAtTime(0.01, time + 0.4);
-
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-
-            osc.start(time);
-            osc.stop(time + 0.4);
         });
     }
 }
