@@ -1,502 +1,673 @@
-// 리얼 카톡/채팅 �?& ?�?�어??& 미니게임 ?�동 ?�나리오 ?�이??const SCENARIOS = {
+// 리얼 카톡/채팅 뷰 & 타임어택 & 미니게임 연동 시나리오 데이터
+const SCENARIOS = {
     // ==========================================
-    // CHAPTER 1: ?�천지 모략 ?�도 & ?�터 ??    // ==========================================
+    // CHAPTER 1: 새하늘회 모략 전도 & 센터 편
+    // ==========================================
     c1_start: {
         chapter: 1,
-        sender: "?�문조사 ?�?�생 ?�지",
-        avatar: "?��?��?,
+        sender: "설문조사 대학생 은지",
+        avatar: "👩‍🎓",
         bg: "bg-street",
-        location: "?�� 강남??11�?출구 ??(?�??7??",
-        timeLimit: 12, // 12초로 ?�유 ?�게 조정
+        location: "📍 강남역 11번 출구 앞 (저녁 7시)",
+        timeLimit: 12, // 12초로 여유 있게 조정
         messages: [
-            "?�기요! 죄송?�데 ?�시 ?�?�생?�신가?? ??",
-            "?�?��? ?�번 졸업?�품?�로 ?�툰 ?�토�?콘티 짜고 ?�거?�요!",
-            "??1분만 간단???�문조사 가?�할까요? 커피 기프?�콘???�려??"
+            "저기요! 죄송한데 혹시 대학생이신가요? 🥺",
+            "저희가 이번 졸업작품으로 웹툰 스토리 콘티 짜고 있거든요!",
+            "딱 1분만 간단한 설문조사 가능할까요? 커피 기프티콘도 드려요!"
         ],
         choices: [
-            { text: "?�� (?�어???�캔 켜고 ?�길????준 �???지?�간??", next: "ending_ironwall", doubt: 30 },
-            { text: "?� 직장?�인?�요. 바빠??가봐야 ?�니??", next: "c1_street_push", doubt: 15 },
-            { text: "??. ?? 진짜 1분만?�면 ?�드릴게??", next: "c1_minigame_sticker", mentalDmg: 15 }
+            { text: "🎧 (에어팟 노캔 켜고 눈길도 안 준 채 쌩 지나간다)", next: "ending_ironwall", doubt: 30 },
+            { text: "저 직장인인데요. 바빠서 가봐야 합니다.", next: "c1_street_push", doubt: 15 },
+            { text: "아.. 네. 진짜 1분만이면 해드릴게요.", next: "c1_minigame_sticker", mentalDmg: 15 }
         ],
         timeout: {
-            text: "(머뭇거리�?멈춰 ?�다..)",
+            text: "(머뭇거리며 멈춰 섰다..)",
             next: "c1_street_push",
             mentalDmg: 15
         }
     },
     c1_street_push: {
         chapter: 1,
-        sender: "?�문조사 ?�?�생 ?�지",
-        avatar: "?��?��?,
+        sender: "설문조사 대학생 은지",
+        avatar: "👩‍🎓",
         bg: "bg-street",
-        location: "?�� ?�질�?추격",
+        location: "📍 끈질긴 추격",
         timeLimit: 10,
         messages: [
-            "?�머! 직장??분들 ?�실 ?�드백이 진짜 ?�무 ?�실?�거?�요!!",
-            "?�블릿에 ?�티�????�나�?붙여주시�??�요 ?�발???�ㅠ",
-            "?�???�번???�과 못하�?진짜 졸업 ?�급?�해??.."
+            "어머! 직장인 분들 현실 피드백이 진짜 너무 절실했거든요!!",
+            "태블릿에 스티커 딱 하나만 붙여주시면 돼요 제발요 ㅠㅠ",
+            "저희 이번에 통과 못하면 진짜 졸업 유급당해요..."
         ],
         choices: [
-            { text: "?�� \"길에???�이�?깔고 ?�러?�면 불법 ?�치�??�반?�니??\"", next: "ending_police_call", doubt: 50 },
-            { text: "??. ?�겠?�요. ?�티커만 ?�른 붙이�?갈게??", next: "c1_minigame_sticker", mentalDmg: 20 },
-            { text: "(?�화�?귀???��? \"???�마? ??지�????�이??\"", next: "ending_sharp_escape", doubt: 20 }
+            { text: "🚨 \"길에서 테이블 깔고 이러시면 불법 적치물 위반입니다.\"", next: "ending_police_call", doubt: 50 },
+            { text: "하.. 알겠어요. 스티커만 얼른 붙이고 갈게요.", next: "c1_minigame_sticker", mentalDmg: 20 },
+            { text: "(전화기 귀에 대며) \"어 엄마? 어 지금 역 앞이야!\"", next: "ending_sharp_escape", doubt: 20 }
         ],
         timeout: {
-            text: "(?�이 마주치자 ?�블릿을 불쑥 ?�이밀?�다)",
+            text: "(눈이 마주치자 태블릿을 불쑥 들이밀었다)",
             next: "c1_minigame_sticker",
             mentalDmg: 20
         }
     },
-    // 미니게임 1: ?�티�?붙이�?    c1_minigame_sticker: {
+    // 미니게임 1: 스티커 붙이기
+    c1_minigame_sticker: {
         chapter: 1,
-        sender: "?�문조사 ?�?�생 ?�지",
-        avatar: "?��?��?,
+        sender: "설문조사 대학생 은지",
+        avatar: "👩‍🎓",
         bg: "bg-street",
-        location: "?�� ?�블�??�문지 ?�성",
+        location: "📍 태블릿 설문지 작성",
         minigame: "sticker",
         messages: [
-            "?��? 감사?�요! ?�기 ?�블�??�면??보이??문항???�티�??�나�?�?붙여주세??"
+            "우와 감사해요! 여기 태블릿 화면에 보이는 문항에 스티커 하나만 꾹 붙여주세요!"
         ],
-        // 미니게임 ?�료 ???�어�???        nextAfterMinigame: "c1_minigame_shape"
+        // 미니게임 완료 시 넘어갈 씬
+        nextAfterMinigame: "c1_minigame_shape"
     },
-    // 미니게임 2: ?�형 ?�리?�스??    c1_minigame_shape: {
+    // 미니게임 2: 도형 심리테스트
+    c1_minigame_shape: {
         chapter: 1,
-        sender: "?�문조사 ?�?�생 ?�지",
-        avatar: "?��?��?,
+        sender: "설문조사 대학생 은지",
+        avatar: "👩‍🎓",
         bg: "bg-street",
-        location: "?�� ?�형 ?�리분석 ?�시",
+        location: "📍 도형 심리분석 낚시",
         minigame: "shape",
         messages: [
-            "?��? 감사?�요! 보답?�로 ?��??��??�는 ?�형 ?�리?�스???�드릴게????,
-            "?�면??보이???�그?��?(??, ?�모(??, ?�모(??, 지그재�?S) �??�일 ?�리???�형 1개�? ?�러보세??"
+            "답변 감사해요! 보답으로 대박 재미있는 도형 심리테스트 해드릴게요 ✨",
+            "화면에 보이는 동그라미(○), 세모(△), 네모(□), 지그재그(S) 중 제일 끌리는 도형 1개를 눌러보세요!"
         ],
         nextAfterMinigame: "c1_shape_reaction"
     },
     c1_shape_reaction: {
         chapter: 1,
-        sender: "?�문조사 ?�?�생 ?�지",
-        avatar: "?��?��?,
+        sender: "설문조사 대학생 은지",
+        avatar: "👩‍🎓",
         bg: "bg-street",
-        location: "?�� ?�리 분석 ?�기",
+        location: "📍 심리 분석 사기",
         timeLimit: 10,
         messages: [
-            "??.. ?��?.. ?�름 ?�아 ?��",
-            "?�시 ?�즘 겉으로는 밝고 ?�씩??척하지�?..",
-            "?�으로는 미래???�간관�??�문???�자 ?�끙 ?�고 계시지 ?�나??",
-            "기질???�무 맑�????�적?�로 많이 지�?보이?�요."
+            "헐... 대박... 소름 돋아 😱",
+            "혹시 요즘 겉으로는 밝고 씩씩한 척하지만...",
+            "속으로는 미래나 인간관계 때문에 혼자 끙끙 앓고 계시지 않나요?",
+            "기질이 너무 맑은데 영적으로 많이 지쳐 보이세요."
         ],
         choices: [
-            { text: "\"??. 맞아?? ?�떻�??�셨?�요?\" (?�기?�한??", next: "c1_cafe_invite", mentalDmg: 25 },
-            { text: "\"?�구????겪는 바넘 ?�과(Barnum Effect)?�요.\" (?�소)", next: "c1_skeptic", doubt: 35 },
-            { text: "\"?� ?�리???�공?�인???�법 ??보입?�다. 가?�요.\"", next: "ending_sharp_escape", doubt: 40 }
+            { text: "\"어.. 맞아요! 어떻게 아셨어요?\" (신기해한다)", next: "c1_cafe_invite", mentalDmg: 25 },
+            { text: "\"누구나 다 겪는 바넘 효과(Barnum Effect)네요.\" (냉소)", next: "c1_skeptic", doubt: 35 },
+            { text: "\"저 심리학 전공자인데 수법 다 보입니다. 가세요.\"", next: "ending_sharp_escape", doubt: 40 }
         ],
         timeout: {
-            text: "(말문??막�? 고개�??�덕?�고 말았??",
+            text: "(말문이 막혀 고개를 끄덕이고 말았다)",
             next: "c1_cafe_invite",
             mentalDmg: 25
         }
     },
     c1_skeptic: {
         chapter: 1,
-        sender: "?�지??친구 (바람?�이)",
-        avatar: "?��?��?,
+        sender: "은지의 친구 (바람잡이)",
+        avatar: "👩‍🦰",
         bg: "bg-street",
-        location: "?�� 바람?�이 ?�입",
+        location: "📍 바람잡이 투입",
         timeLimit: 10,
         messages: [
-            "?�.. ?�치가 진짜 빠르?�다! ?�향 ?�찰?�이 ?�다르신?�요?",
-            "?�실 ??친구가 ?�순 ?�생???�니???�국?�담?�리?�구???�턴?�에??",
-            "길거리라 ?�?�?�데, ?��? ?�벅?�서 ?�뜻???�메리카???�게?? 10분만 ?�???�눠봐요."
+            "와.. 눈치가 진짜 빠르시다! 성향 통찰력이 남다르신데요?",
+            "사실 제 친구가 단순 학생이 아니라 한국상담심리연구원 인턴이에요.",
+            "길거리라 쌀쌀한데, 제가 스벅에서 따뜻한 아메리카노 살게요! 10분만 대화 나눠봐요."
         ],
         choices: [
-            { text: "공짜 커피?�까.. 10분만 ?�기 ?�자.", next: "c1_cafe_room", mentalDmg: 25 },
-            { text: "\"?� ?�용불량?�라 마실 ?�격???�습?�다.\" (?�칼 거절)", next: "ending_sharp_escape", doubt: 30 }
+            { text: "공짜 커피니까.. 10분만 얘기 듣자.", next: "c1_cafe_room", mentalDmg: 25 },
+            { text: "\"저 신용불량자라 마실 자격이 없습니다.\" (단칼 거절)", next: "ending_sharp_escape", doubt: 30 }
         ],
         timeout: {
-            text: "(분위기에 ?�쓸??카페�?발걸?�을 ??��??",
+            text: "(분위기에 휩쓸려 카페로 발걸음을 옮겼다)",
             next: "c1_cafe_room",
             mentalDmg: 30
         }
     },
     c1_cafe_invite: {
         chapter: 1,
-        sender: "?�문조사 ?�?�생 ?�지",
-        avatar: "?��?��?,
+        sender: "설문조사 대학생 은지",
+        avatar: "👩‍🎓",
         bg: "bg-street",
-        location: "?�� ?�랑????�� (Love-Bombing)",
+        location: "📍 사랑의 폭탄 (Love-Bombing)",
         timeLimit: 10,
         messages: [
-            "?��? ?�담 공�? 3?�째?�데 ?�렇�?맑고 ?�세??�?진짜 ?�랜만에 봐요!",
-            "?��?�??�면 주�? ?�람?�한??기만 ??빨려???�ㅠ",
-            "?��? 바로 ??카페?�서 커피 ?�게?? 기질 보완?�는 비법 ??10분만 ?�려?�릴게요."
+            "제가 상담 공부 3년째인데 이렇게 맑고 섬세한 분 진짜 오랜만에 봐요!",
+            "이대로 두면 주변 사람들한테 기만 다 빨려요 ㅠㅠ",
+            "제가 바로 앞 카페에서 커피 살게요! 기질 보완하는 비법 딱 10분만 알려드릴게요."
         ],
         choices: [
-            { text: "커피 ?????�어마시???�라간다.", next: "c1_cafe_room", mentalDmg: 30 },
-            { text: "\"?�속 ?�간 ???�서 가봐야 ?�니??\" 칼거??, next: "ending_sharp_escape", doubt: 25 }
+            { text: "커피 한 잔 얻어마시러 따라간다.", next: "c1_cafe_room", mentalDmg: 30 },
+            { text: "\"약속 시간 다 돼서 가봐야 합니다.\" 칼거절", next: "ending_sharp_escape", doubt: 25 }
         ],
         timeout: {
-            text: "(?�색?�게 미소 지?�며 카페�??�려갔다)",
+            text: "(어색하게 미소 지으며 카페로 끌려갔다)",
             next: "c1_cafe_room",
             mentalDmg: 30
         }
     },
     c1_cafe_room: {
         chapter: 1,
-        sender: "?�지 & ?�연???�배",
-        avatar: "?��?��?,
+        sender: "은지 & 우연한 선배",
+        avatar: "👩‍💼",
         bg: "bg-cafe",
-        location: "?�� 조용??룸카??(밀??",
+        location: "📍 조용한 룸카페 (밀실)",
         timeLimit: 10,
         messages: [
-            "(룸카??문이 벌컥 ?�리�?30?� ?�성???�어?�다)",
-            "?�머! ?�지???�기??�???! ?��",
-            "?�지: \"??? ?�?�님! ?�일?�세?? ?��? ?�번에 말�??�린 �??�담?�회 ?�석 멘토?�이?�데 진짜 ?�름 ?�는 ?�연?�다! ?�사?�요, ?�약 ?�기???�든 분이??\""
+            "(룸카페 문이 벌컥 열리며 30대 여성이 들어온다)",
+            "어머! 은지야 여기서 뭐 해?! 😮",
+            "은지: \"어?? 팀장님! 웬일이세요? 대박! 저번에 말씀드린 그 상담협회 수석 멘토님이신데 진짜 소름 돋는 우연이다! 인사해요, 예약 잡기도 힘든 분이야!\""
         ],
         choices: [
-            { text: "(?�연???�무 ??맞아?�어지?�데..? ?�심?�다)", next: "c1_room_doubt", doubt: 40 },
-            { text: "?�?�한 분인가 보다 ?�고 깍듯?�게 ?�사?�다.", next: "c1_room_deep", mentalDmg: 35 }
+            { text: "(우연이 너무 딱 맞아떨어지는데..? 의심한다)", next: "c1_room_doubt", doubt: 40 },
+            { text: "대단한 분인가 보다 하고 깍듯하게 인사한다.", next: "c1_room_deep", mentalDmg: 35 }
         ],
         timeout: {
-            text: "(?�떨결에 같이 마주 ?�아 ?�사�??�누?�다)",
+            text: "(얼떨결에 같이 마주 앉아 인사를 나누었다)",
             next: "c1_room_deep",
             mentalDmg: 35
         }
     },
     c1_room_doubt: {
         chapter: 1,
-        sender: "?�지????[?�레그램]",
-        avatar: "?��",
+        sender: "은지의 폰 [텔레그램]",
+        avatar: "📱",
         bg: "bg-cafe",
-        location: "?�� ?�레그램 지???�착",
+        location: "📍 텔레그램 지령 포착",
         timeLimit: 10,
         messages: [
-            "?�?�이?�는 ?�람?????�을 ?�고 ?�을 지그시 ?�시?�다.",
-            "�??�간, ?�이�????�지?????�면??[?�레그램] ?�림???�다!",
-            "?�구??��??지�? ?�?�자 지�??�치챘으??가�?갈등 찔러??고립?�키?�요. ?�사귀 ?�입 ?�료??
+            "팀장이라는 사람이 내 손을 잡고 눈을 지그시 응시한다.",
+            "그 순간, 테이블 위 은지의 폰 화면에 [텔레그램] 알림이 떴다!",
+            "『구역장님 지침: 대상자 지금 눈치챘으니 가족 갈등 찔러서 고립시키세요. 잎사귀 투입 완료』"
         ],
         choices: [
-            { text: "?�� ?�을 가리키�?\"?�네 ?�천지지? ?�장 경찰 부른다!\"", next: "ending_police_call", doubt: 50 },
-            { text: "?�름???�아 벌떡 ?�어?�서 가�?챙겨 ?�망친다.", next: "ending_awkward_escape", doubt: 30 },
-            { text: "(?�무 무서?�서 모르??�?굳어버린??", next: "c1_room_deep", mentalDmg: 35 }
+            { text: "🚨 폰을 가리키며 \"너네 새하늘회지? 당장 경찰 부른다!\"", next: "ending_police_call", doubt: 50 },
+            { text: "소름이 돋아 벌떡 일어나서 가방 챙겨 도망친다.", next: "ending_awkward_escape", doubt: 30 },
+            { text: "(너무 무서워서 모르는 척 굳어버린다)", next: "c1_room_deep", mentalDmg: 35 }
         ],
         timeout: {
-            text: "(공포??질려 ?�무 말도 ?��? 못했??",
+            text: "(공포에 질려 아무 말도 하지 못했다)",
             next: "c1_room_deep",
             mentalDmg: 35
         }
     },
     c1_room_deep: {
         chapter: 1,
-        sender: "?�담 ?�석 멘토",
-        avatar: "?��?��?,
+        sender: "상담 수석 멘토",
+        avatar: "👩‍💼",
         bg: "bg-cafe",
-        location: "?�� 비�? ?��? ?�약 강요",
+        location: "📍 비밀 유지 서약 강요",
         timeLimit: 10,
         messages: [
-            "?�신 ?�혼??짙�? ?�처가 ?�어?? ?�건 ?�문???�경 말�??�로 치유?�야 ?�요.",
-            "?�?��? 비�?리에 ?�는 무료 '?�교 ?�터'가 ?�는??..",
-            "?�️ ?? ?�건 가족이??친구, 교회 목사?�께 ?��? 말하�????�요.",
-            "?�이 ?�린 ?�람?�에�?말하�?마�?가 ?��???복을 뺏어가거든?? ?�속?????�죠?"
+            "당신 영혼에 짙은 상처가 있어요. 이건 인문학 성경 말씀으로 치유해야 해요.",
+            "저희가 비밀리에 여는 무료 '선교 센터'가 있는데...",
+            "⚠️ 단! 이건 가족이나 친구, 교회 목사님께 절대 말하면 안 돼요.",
+            "영이 어린 사람들에게 말하면 마귀가 틈타서 복을 뺏어가거든요. 약속할 수 있죠?"
         ],
         choices: [
-            { text: "가족에�?비�?�??�라???�간 100% ?�이비다! 박차�??�간??", next: "ending_awkward_escape", doubt: 35 },
-            { text: "\"??. ???�생??바�????�다�?가볼게??.\"", next: "c1_center_inside", mentalDmg: 40 }
+            { text: "가족에게 비밀로 하라는 순간 100% 사이비다! 박차고 나간다.", next: "ending_awkward_escape", doubt: 35 },
+            { text: "\"네.. 제 인생이 바뀔 수 있다면 가볼게요..\"", next: "c1_center_inside", mentalDmg: 40 }
         ],
         timeout: {
-            text: "(가?�라?�팅??짓눌??고개�??�덕?�고 말았??",
+            text: "(가스라이팅에 짓눌려 고개를 끄덕이고 말았다)",
             next: "c1_center_inside",
             mentalDmg: 40
         }
     },
     c1_center_inside: {
         chapter: 1,
-        sender: "?�터 총괄 강사",
-        avatar: "?��?��?,
+        sender: "센터 총괄 강사",
+        avatar: "🧑‍🏫",
         bg: "bg-center",
-        location: "?�� 간판 ?�는 ?��? 3�?(?�온?�터)",
+        location: "📍 간판 없는 상가 3층 (새벽센터)",
         timeLimit: 10,
         messages: [
-            "(철문???�자 ???�츠�??��? ?�십 명이 ?�제??박수�?친다)",
-            "?? 마�?가 ?��?지 못하�??��??��? ?��? 바구?�에 ?�출?�세??",
-            "가족들?�게??취업 ?�터????�� ?�난?�고 카톡 보내?�요!"
+            "(철문을 열자 흰 셔츠를 입은 수십 명이 일제히 박수를 친다)",
+            "자, 마귀가 틈타지 못하게 휴대폰은 전부 바구니에 제출하세요!",
+            "가족들에게는 취업 스터디 늦게 끝난다고 카톡 보내세요!"
         ],
         choices: [
-            { text: "?�출?�기! 문을 박차�??�망친다!", next: "c1_fake_run", fakeButton: true },
-            { text: "(공포??질려 ?��??�을 바구?�에 ?�다)", next: "ending_center_114", mentalDmg: 50 }
+            { text: "탈출하기! 문을 박차고 도망친다!", next: "c1_fake_run", fakeButton: true },
+            { text: "(공포에 질려 휴대폰을 바구니에 낸다)", next: "ending_center_114", mentalDmg: 50 }
         ],
         timeout: {
-            text: "(?�도?�이 ?�러?�며 ?��??�을 뺏어갔다)",
+            text: "(신도들이 둘러싸며 휴대폰을 뺏어갔다)",
             next: "ending_center_114",
             mentalDmg: 50
         }
     },
     c1_fake_run: {
         chapter: 1,
-        sender: "???�츠 무리",
-        avatar: "?��",
+        sender: "흰 셔츠 무리",
+        avatar: "👥",
         bg: "bg-center",
-        location: "?�� ?�뇌??감금",
+        location: "📍 세뇌실 감금",
         timeLimit: 10,
         messages: [
-            "?�러 명의 ?�도?�이 ?�신???�과 ?�깨�?부?�럽지�??�단????��맨다.",
-            "\"?�탄???�혹??빠�??�면 ???�요... ?�으?�요. ?�으?�요.\""
+            "여러 명의 신도들이 당신의 팔과 어깨를 부드럽지만 단단히 옭아맨다.",
+            "\"사탄의 유혹에 빠지시면 안 돼요... 앉으세요. 앉으세요.\""
         ],
         choices: [
-            { text: "?�아 ?�아 ?�아 ?�아 ?�아", next: "ending_fake_glitch", glitch: true }
+            { text: "앉아 앉아 앉아 앉아 앉아", next: "ending_fake_glitch", glitch: true }
         ],
         timeout: {
-            text: "?�식??붕괴?�다...",
+            text: "의식이 붕괴된다...",
             next: "ending_fake_glitch"
         }
     },
 
     // ==========================================
-    // CHAPTER 2: ?�?�진리회 조상 ?�사 & 치성�???    // ==========================================
+    // CHAPTER 2: 대도진리원 조상 제사 & 치성비 편
+    // ==========================================
     c2_start: {
         chapter: 2,
-        sender: "공손???��?�?,
-        avatar: "?��?��?,
+        sender: "공손한 도믿맨",
+        avatar: "🧑‍🌾",
         bg: "bg-street",
-        location: "?�� ?�등?�역 지?�상가 근처",
+        location: "📍 영등포역 지하상가 근처",
         timeLimit: 10,
         messages: [
-            "?��??�니?? �?좀 ?�쭐게요 ?��",
-            "?�시 ??근처??구�??��????�디쯤인가??",
-            "?�?��? ??배터리�? ???��???지?��? �?보고 ?�어?�요..."
+            "실례합니다! 길 좀 여쭐게요 🙏",
+            "혹시 이 근처에 구민회관이 어디쯤인가요?",
+            "저희가 폰 배터리가 다 나가서 지도를 못 보고 있어서요..."
         ],
         choices: [
-            { text: "\"?�마?�폰 켜져 ?�는?�요?\" (?�에 ???�을 찌른??", next: "c2_caught_phone", doubt: 30 },
-            { text: "\"?�쪽으�?가?�면 ?�요.\" (길만 ?�려준??", next: "c2_praise", mentalDmg: 10 },
-            { text: "(?�꾸도 ?�이 ?�만 보고 직진?�다)", next: "ending_ironwall", doubt: 20 }
+            { text: "\"스마트폰 켜져 있는데요?\" (손에 든 폰을 찌른다)", next: "c2_caught_phone", doubt: 30 },
+            { text: "\"저쪽으로 가시면 돼요.\" (길만 알려준다)", next: "c2_praise", mentalDmg: 10 },
+            { text: "(대꾸도 없이 앞만 보고 직진한다)", next: "ending_ironwall", doubt: 20 }
         ],
         timeout: {
-            text: "(길을 ?�려주려 멈춰 ?�다)",
+            text: "(길을 알려주려 멈춰 섰다)",
             next: "c2_praise",
             mentalDmg: 10
         }
     },
     c2_caught_phone: {
         chapter: 2,
-        sender: "공손???��?�?,
-        avatar: "?��?��?,
+        sender: "공손한 도믿맨",
+        avatar: "🧑‍🌾",
         bg: "bg-street",
-        location: "?�� 길거�??��?,
+        location: "📍 길거리 대치",
         timeLimit: 10,
         messages: [
-            "??. ?�면??먹통?�라?�요 ?�ㅎ;",
-            "그런???�생?? 길을 ?�나??..",
-            "?�굴??조상?�의 지극한 공덕???�르�?계십?�다.",
-            "?��?�???밑에 ?�주 짙�? ?�환�??�운??그늘???�리?�져 ?�네??"
+            "아.. 화면이 먹통이라서요 ㅎㅎ;",
+            "그런데 선생님, 길을 떠나서...",
+            "얼굴에 조상님의 지극한 공덕이 흐르고 계십니다.",
+            "하지만 눈 밑에 아주 짙은 우환과 액운의 그늘이 드리워져 있네요."
         ],
         choices: [
-            { text: "\"?��? ?�십?�까 ?�퍼?�리 ?�직???�나??\" 비웃?�다.", next: "ending_sharp_escape", doubt: 30 },
-            { text: "\"??조상?�이??.? 그늘?�요..?\" (?�짝 ?�깃)", next: "c2_teahouse", mentalDmg: 20 }
+            { text: "\"도를 아십니까 레퍼토리 아직도 쓰나요?\" 비웃는다.", next: "ending_sharp_escape", doubt: 30 },
+            { text: "\"제 조상님이요..? 그늘이요..?\" (살짝 솔깃)", next: "c2_teahouse", mentalDmg: 20 },
+            { text: "\"선생님, 혹시 라면 사리의 우주적 순환을 아십니까?\" (역포교 시작)", next: "ending_reverse_preach", doubt: 10 }
         ],
         timeout: {
-            text: "(그늘?�라??말에 마음???�컥 ?�려?�았??",
+            text: "(그늘이라는 말에 마음이 덜컥 내려앉았다)",
             next: "c2_teahouse",
             mentalDmg: 20
         }
     },
     c2_praise: {
         chapter: 2,
-        sender: "공손???��?�?,
-        avatar: "?��?��?,
+        sender: "공손한 도믿맨",
+        avatar: "🧑‍🌾",
         bg: "bg-street",
-        location: "?�� 조상?�의 ?�물",
+        location: "📍 조상님의 눈물",
         timeLimit: 10,
         messages: [
-            "말�??�시??목소리에 ?�기(?�氣)가 가?�하?�네??",
-            "?�?��??�을 많이 ?�으??집안??귀???�손?�십?�다.",
-            "그런??지�?조상????분이 ?�울?�게 구천???�돌�?목이 ?� ?�고 계십?�다...",
-            "?�손???�성???�리지 ?�아 ?�생???�꾸 꼬이??거예??"
+            "말씀하시는 목소리에 영기(靈氣)가 가득하시네요!",
+            "대대로 덕을 많이 쌓으신 집안의 귀한 자손이십니다.",
+            "그런데 지금 조상님 한 분이 억울하게 구천을 떠돌며 목이 타 울고 계십니다...",
+            "자손이 정성을 드리지 않아 인생이 자꾸 꼬이는 거예요."
         ],
         choices: [
-            { text: "\"???�생 ???�리고 ?�는?�요? ?�소�?마세??\"", next: "ending_sharp_escape", doubt: 25 },
-            { text: "\"?�뜻??찻집 가??10분만 ?�운 ?�는 �??�으?�죠.\"???�끌린다.", next: "c2_teahouse", mentalDmg: 25 }
+            { text: "\"제 인생 잘 풀리고 있는데요? 헛소리 마세요.\"", next: "ending_sharp_escape", doubt: 25 },
+            { text: "\"따뜻한 찻집 가서 10분만 액운 푸는 법 들으시죠.\"에 이끌린다.", next: "c2_teahouse", mentalDmg: 25 }
         ],
         timeout: {
-            text: "(찝찝??마음??찻집?�로 ?�라 ?�어갔다)",
+            text: "(찝찝한 마음에 찻집으로 따라 들어갔다)",
             next: "c2_teahouse",
             mentalDmg: 25
         }
     },
     c2_teahouse: {
         chapter: 2,
-        sender: "?�무 & 교정",
-        avatar: "?��",
+        sender: "선무 & 교정",
+        avatar: "🍵",
         bg: "bg-cafe",
-        location: "?�� ?�통 찻집 ?�운 가?�라?�팅",
+        location: "📍 전통 찻집 액운 가스라이팅",
         timeLimit: 10,
         messages: [
-            "?�생?? ?�해 ?�에 집안?????????�나 금전 ?�탄?????�운???�었?�요.",
-            "?�행???�???�장???�주 ?�험???�급 ?�감?�이 계십?�다.",
-            "?�늘 ??30분만 조상?�께 맑�? �??�리�??�배(??4�? ?�리�?모든 ?�운??복으�?바뀝니??",
-            "?�시비도 ?�?��? ???�니 지�??�장 가?�죠."
+            "선생님, 올해 안에 집안에 큰 상(喪)이나 금전 파탄이 날 액운이 끼었어요.",
+            "다행히 저희 도장에 아주 영험한 상급 선감님이 계십니다.",
+            "오늘 딱 30분만 조상님께 맑은 물 올리고 사배(절 4번) 드리면 모든 액운이 복으로 바뀝니다!",
+            "택시비도 저희가 낼 테니 지금 당장 가시죠."
         ],
         choices: [
-            { text: "\"간판 ?�는 빌라 ?�장 가�?감금?�라?�데?? ??갑니??\"", next: "ending_sharp_escape", doubt: 40 },
-            { text: "가족이 ?�친?�는 말에 겁을 먹고 ?�시???�른??", next: "c2_altar_inside", mentalDmg: 35 }
+            { text: "\"간판 없는 빌라 도장 가면 감금이라던데요? 안 갑니다.\"", next: "ending_sharp_escape", doubt: 40 },
+            { text: "가족이 다친다는 말에 겁을 먹고 택시에 오른다.", next: "c2_altar_inside", mentalDmg: 35 }
         ],
         timeout: {
-            text: "(불안감에 ?�쓸???�시???�버렸??",
+            text: "(불안감에 휩쓸려 택시에 타버렸다)",
             next: "c2_altar_inside",
             mentalDmg: 35
         }
     },
     c2_altar_inside: {
         chapter: 2,
-        sender: "?�급 ?�감",
-        avatar: "?���?,
+        sender: "상급 선감",
+        avatar: "🕯️",
         bg: "bg-altar",
-        location: "?�� 간판 ?�는 빌라 4�?치성??,
+        location: "📍 간판 없는 빌라 4층 치성소",
         timeLimit: 10,
         messages: [
-            "(?�막 커튼??쳐진 �? ???�새?� 촛불 ?�단 ?�에 ???�복 ?��? 무리가 ???�다)",
-            "몸과 마음???� 부?�을 ?�어???�니??",
-            "?�옷�??�기�????�결??백의(???�복)�??�복?�세??"
+            "(암막 커튼이 쳐진 방, 향 냄새와 촛불 제단 앞에 흰 한복 입은 무리가 서 있다)",
+            "몸과 마음에 낀 부정을 씻어야 합니다.",
+            "속옷만 남기고 이 정결한 백의(흰 한복)로 환복하세요."
         ],
         choices: [
-            { text: "\"?�을 ??벗어??미쳤?�니�? ?�장 ?�갑?�다!\"", next: "c2_door_blocked", doubt: 35 },
-            { text: "(?�압?�인 분위기에 ?�려 ?�복?�로 갈아?�는??", next: "c2_minigame_tap", mentalDmg: 35 }
+            { text: "\"옷을 왜 벗어요 미쳤습니까? 당장 나갑니다!\"", next: "c2_door_blocked", doubt: 35 },
+            { text: "(위압적인 분위기에 눌려 한복으로 갈아입는다)", next: "c2_minigame_tap", mentalDmg: 25 }
         ],
         timeout: {
-            text: "(기세???�려 ?�겁결에 ?�복??받아 ?�었??",
+            text: "(기세에 눌려 엉겁결에 한복을 받아 들었다)",
             next: "c2_minigame_tap",
-            mentalDmg: 35
+            mentalDmg: 25
         }
     },
     c2_door_blocked: {
         chapter: 2,
-        sender: "건장???�도??,
-        avatar: "?��",
+        sender: "건장한 신도들",
+        avatar: "🥋",
         bg: "bg-altar",
-        location: "?�� 출구 봉쇄",
+        location: "📍 출구 봉쇄",
         timeLimit: 10,
         messages: [
-            "(건장???�도 2명이 ?��?문을 막아?�다)",
-            "?�생?? ?�기??그냥 ?��??�면 발걸???�는 곳마??조상???��?가 붙습?�다.",
-            "부모님??�?가??차에 치이?�도 괜찮?�니�?",
-            "??10�??�성�??�리�?가?�요."
+            "(건장한 신도 2명이 현관문을 막아선다)",
+            "선생님, 여기서 그냥 나가시면 발걸음 닿는 곳마다 조상님 원귀가 붙습니다.",
+            "부모님이 길 가다 차에 치이셔도 괜찮습니까?",
+            "딱 10분 정성만 올리고 가세요."
         ],
         choices: [
-            { text: "?�� \"?�마?�폰 112 긴급 SOS ?��??�니?? 경찰 ?�니??\"", next: "ending_police_call", doubt: 50 },
-            { text: "겁에 질려 ?�먹?�며 ?�단 ?�으�??�아간다.", next: "c2_minigame_tap", mentalDmg: 40 }
+            { text: "🚨 \"스마트폰 112 긴급 SOS 눌렀습니다. 경찰 옵니다!\"", next: "ending_police_call", doubt: 50 },
+            { text: "겁에 질려 울먹이며 제단 앞으로 돌아간다.", next: "c2_minigame_tap", mentalDmg: 20 }
         ],
         timeout: {
-            text: "(?�박??�??�겨 ?�단?�로 ?�아갔다)",
+            text: "(협박에 못 이겨 제단으로 돌아갔다)",
             next: "c2_minigame_tap",
-            mentalDmg: 40
+            mentalDmg: 20
         }
     },
-    // 미니게임 3: ?�금 취소 10??광클 미니게임!
+    // 미니게임 3: 송금 취소 10회 광클 미니게임!
     c2_minigame_tap: {
         chapter: 2,
-        sender: "?�급 ?�감",
-        avatar: "?���?,
+        sender: "상급 선감",
+        avatar: "🕯️",
         bg: "bg-altar",
-        location: "?�� 치성�?100�????�구",
+        location: "📍 치성비 100만 원 요구",
         minigame: "tap_cancel",
         messages: [
-            "?�을 ?�십 �??�리???�감???�블�??�금 ?�면???�이민다.",
-            "\"조상???�원�?100???�성비로 100�??�을 ?�려???�니??\"",
-            "?�️ 카카?�페??100�????�금 ?�인 진행 �?.. 취소 버튼??10�?광클?�서 지갑을 ?�수?�세??"
+            "절을 수십 번 올리자 선감이 태블릿 송금 화면을 들이민다.",
+            "\"조상님 해원과 100일 정성비로 100만 원을 올려야 합니다.\"",
+            "⚠️ 카카오페이 100만 원 송금 승인 진행 중... 취소 버튼을 10번 광클해서 지갑을 사수하세요!"
         ],
         nextAfterMinigame: "ending_wallet_guard",
         failEnding: "ending_ancestor_debt"
     },
 
     // ==========================================
-    // CHAPTER 3: ?�모??& ?�이?�앱 '?�사귀' ??    // ==========================================
+    // CHAPTER 3: 소모임 & 데이팅앱 '잎사귀' 편
+    // ==========================================
     c3_start: {
         chapter: 3,
-        sender: "?�모???�감 ?�성 민서",
-        avatar: "?��",
+        sender: "소모임 호감 이성 민서",
+        avatar: "💃",
         bg: "bg-bar",
-        location: "?�� ?�수??감성 ?�?�바",
+        location: "📍 성수동 감성 와인바",
         timeLimit: 10,
         messages: [
-            "OO???�늘 ?��?줘서 ?�무 고마?�요 ?�ㅎ ?�??맛있�?",
-            "진짜 OO?�는 ?�뜻?�고 빛나???�람?�데...",
-            "주�??�서 많이 ?�롭�??�들?�겠???�ㅠ ?�???�년??번아???�??죽을 뻔했거든??",
-            "근데 ?��??�전??구원??준 ?�생 멘토?�이 계세?? OO??�??�개?�주�??�어??"
+            "OO씨 오늘 나와줘서 너무 고마워요 ㅎㅎ 와인 맛있죠?",
+            "진짜 OO씨는 따뜻하고 빛나는 사람인데...",
+            "주변에서 많이 외롭고 힘들었겠다 ㅠㅠ 저도 작년에 번아웃 와서 죽을 뻔했거든요.",
+            "근데 저를 완전히 구원해 준 인생 멘토님이 계세요. OO씨 꼭 소개해주고 싶어요!"
         ],
         choices: [
-            { text: "\"멘토?? ?�이?�하???�??갑자�???멘토 ?�기?�요?\"", next: "c3_doubt_check", doubt: 35 },
-            { text: "\"?�, 민서?��? 추천?�는 분이�??�??�?뵙고 ?�어??\"", next: "c3_study_room", mentalDmg: 25 }
+            { text: "\"멘토님? 데이트하러 와서 갑자기 웬 멘토 얘기예요?\"", next: "c3_doubt_check", doubt: 35 },
+            { text: "\"와, 민서씨가 추천하는 분이면 저도 꼭 뵙고 싶어요!\"", next: "c3_study_room", mentalDmg: 25 }
         ],
         timeout: {
-            text: "(미소???�??고개�??�덕?�??",
+            text: "(미소에 홀려 고개를 끄덕였다)",
             next: "c3_study_room",
             mentalDmg: 25
         }
     },
     c3_doubt_check: {
         chapter: 3,
-        sender: "?�모???�감 ?�성 민서",
-        avatar: "?��",
+        sender: "소모임 호감 이성 민서",
+        avatar: "💃",
         bg: "bg-bar",
-        location: "?�� 감정 조작 (가?�라?�팅)",
+        location: "📍 감정 조작 (가스라이팅)",
         timeLimit: 10,
         messages: [
-            "(민서가 ?�무룩한 ?�정?�로 ?�?�잔??만�??�거린다)",
-            "OO?�한???�말 ?��? 주고 ?�어???�렵�?부?�드�?건데...",
-            "?��?그렇�?�?믿으?�요? ?�운?�요...",
-            "?��? 무슨 ?�상???�이비라???�는 �??�시??봐요 ?�ㅠ"
+            "(민서가 시무룩한 표정으로 와인잔을 만지작거린다)",
+            "OO씨한테 정말 도움 주고 싶어서 어렵게 부탁드린 건데...",
+            "저를 그렇게 못 믿으세요? 서운해요...",
+            "제가 무슨 이상한 사이비라도 되는 줄 아시나 봐요 ㅠㅠ"
         ],
         choices: [
-            { text: "\"미안?�요 민서?? ?��? ?��??�나 봐요. 만나볼게??\"", next: "c3_study_room", mentalDmg: 30 },
-            { text: "\"?�모?�에 ?�천지 ?�장 ?�입 많다?�데 �??�턴 그�?로네??\" ?�리?�서 ?�어?�다.", next: "ending_dating_scam", doubt: 45 }
+            { text: "\"미안해요 민서씨, 제가 예민했나 봐요. 만나볼게요.\"", next: "c3_study_room", mentalDmg: 30 },
+            { text: "\"소모임에 새하늘회 위장 잠입 많다던데 그 패턴 그대로네요.\" 자리에서 일어난다.", next: "ending_dating_scam", doubt: 45 }
         ],
         timeout: {
-            text: "(미안??마음???�과?�며 만나겠다�??�버?�다)",
+            text: "(미안한 마음에 사과하며 만나겠다고 해버렸다)",
             next: "c3_study_room",
             mentalDmg: 30
         }
     },
     c3_study_room: {
         chapter: 3,
-        sender: "?�장 ?�터?�룸 ?�강?�들",
-        avatar: "?��",
+        sender: "위장 스터디룸 수강생들",
+        avatar: "👥",
         bg: "bg-cafe",
-        location: "?�� 강남 ?�장 ?�터?�룸",
+        location: "📍 강남 위장 스터디룸",
         timeLimit: 10,
         messages: [
-            "멘토?�는 중년 ?�사?� ?�문???�터?��? ?�작?�다.",
-            "그런???�른 ?�강??3명이 멘토??말마??\"?�멘!\", \"?� 맞아??\" ?�며 과하�??�응?�다.",
-            "?�실 민서�??�함??�??�의 모든 ?�람???�천지 '?�사귀(바람?�이)'?�이??"
+            "멘토라는 중년 신사와 인문학 스터디를 시작했다.",
+            "그런데 다른 수강생 3명이 멘토의 말마다 \"아멘!\", \"와 맞아요!\" 하며 과하게 호응한다.",
+            "사실 민서를 포함해 방 안의 모든 사람이 새하늘회 '잎사귀(바람잡이)'들이다."
         ],
         choices: [
-            { text: "종교 집단 ?�새가 ?�무 ?�다. ?�장???�계�??�출?�다!", next: "ending_sharp_escape", doubt: 40 },
-            { text: "\"?�들 ?�심??배우??. ?�도 집중?�야지.\" 마음???�다.", next: "c3_secret_pledge", mentalDmg: 35 }
+            { text: "종교 집단 냄새가 너무 난다. 화장실 핑계로 탈출한다!", next: "ending_sharp_escape", doubt: 40 },
+            { text: "\"다들 열심히 배우네.. 나도 집중해야지.\" 마음을 연다.", next: "c3_secret_pledge", mentalDmg: 35 }
         ],
         timeout: {
-            text: "(분위기에 ?�도?�어 계속 ?�아 ?�었??",
+            text: "(분위기에 압도되어 계속 앉아 있었다)",
             next: "c3_secret_pledge",
             mentalDmg: 35
         }
     },
     c3_secret_pledge: {
         chapter: 3,
-        sender: "멘토 (?�천지 강사)",
-        avatar: "?��?��?,
+        sender: "멘토 (새하늘회 강사)",
+        avatar: "🧑‍🏫",
         bg: "bg-cafe",
-        location: "?�� 비�? ?��? ?�약??,
+        location: "📍 비밀 유지 서약서",
         timeLimit: 10,
         messages: [
-            "?�늘 ?��? ??말�??� ?�적 비�??�니??",
-            "가족이??친구?�게 말하�??�탄??그들???�해 ?�신???�험???�게 ??겁니??",
-            "?�른 ?�람?�게 ?��? 발설?��? ?�겠?�는 ?�약?�에 ?�명?�세??"
+            "오늘 들은 이 말씀은 영적 비밀입니다.",
+            "가족이나 친구에게 말하면 사탄이 그들을 통해 당신을 시험에 들게 할 겁니다.",
+            "다른 사람에게 절대 발설하지 않겠다는 서약서에 서명하세요."
         ],
         choices: [
-            { text: "가족에�?비�?�??�라???�간 100% ?�단?�다! ?�약?��? �?��??", next: "ending_awkward_escape", doubt: 50 },
-            { text: "민서???�을 �??�으�??�약?�에 ?�명?�다.", next: "ending_cult_leaf", mentalDmg: 50 }
+            { text: "가족에게 비밀로 하라는 순간 100% 이단이다! 서약서를 찢는다.", next: "ending_awkward_escape", doubt: 50 },
+            { text: "민서의 손을 꼭 잡으며 서약서에 서명한다.", next: "ending_cult_leaf", mentalDmg: 50 }
         ],
         timeout: {
-            text: "(?�떨결에 ?�약?�에 ?�름???�고 말았??",
+            text: "(얼떨결에 서약서에 이름을 쓰고 말았다)",
             next: "ending_cult_leaf",
             mentalDmg: 50
         }
+    },
+    // ==========================================
+    // CHAPTER 4: 러닝크루 오픈채팅 & 줌 스터디 편
+    // ==========================================
+    c4_start: {
+        chapter: 4,
+        sender: "한강 러닝크루 방장 지훈",
+        avatar: "🏃",
+        bg: "bg-phone",
+        location: "💬 오픈채팅 [한강 야간러닝 🌙 초보환영]",
+        timeLimit: 12,
+        items: [],
+        messages: [
+            "(입장하자마자 환영 이모티콘이 20개 넘게 쏟아진다)",
+            "OO님 환영해요~!! 🎉 저희 진짜 초보 위주라 부담 없어요 ㅎㅎ",
+            "이번 주 목요일 저녁 8시 반포 정모 있는데 같이 뛰실래요?",
+            "끝나고 뒤풀이는 자유! 회비 0원이에요 😊"
+        ],
+        choices: [
+            { text: "회비 0원 좋네요! 목요일에 뵐게요 🙌", next: "c4_after_run", mentalDmg: 5 },
+            { text: "(나가기 전에 방장 인스타부터 슬쩍 들어가 본다)", next: "c4_profile_check", doubt: 15 },
+            { text: "(알림만 끄고 일단 눈팅한다)", next: "c4_dm_push" }
+        ],
+        timeout: { text: "(답을 고민하는 사이 단톡에서 내 닉네임이 계속 불린다)", next: "c4_dm_push", mentalDmg: 5 }
+    },
+    c4_dm_push: {
+        chapter: 4,
+        sender: "크루원 하은 (1:1 DM)",
+        avatar: "🙋‍♀️",
+        bg: "bg-phone",
+        location: "💬 1:1 개인 메시지",
+        timeLimit: 10,
+        items: [],
+        messages: [
+            "안녕하세요 OO님! 저 하은이에요 ㅎㅎ 단톡에서 조용하셔서 먼저 연락드려요!",
+            "혹시 처음이라 어색하실까 봐요~ 저도 처음엔 그랬거든요 🥲",
+            "목요일에 저랑 같이 뛰어요! 제가 페이스 맞춰드릴게요 💪"
+        ],
+        choices: [
+            { text: "와 친절하시다.. 그럼 목요일에 봬요!", next: "c4_after_run", mentalDmg: 10 },
+            { text: "\"처음 보는데 개인 DM까지..? 좀 부담되네요\"", next: "c4_profile_check", doubt: 20 }
+        ],
+        timeout: { text: "(읽씹하기 미안해서 '네 ㅎㅎ'라고 보내버렸다)", next: "c4_after_run", mentalDmg: 10 }
+    },
+    c4_profile_check: {
+        chapter: 4,
+        sender: "방장 지훈의 인스타그램",
+        avatar: "📸",
+        bg: "bg-phone",
+        location: "🔍 프로필 뒷조사",
+        timeLimit: 12,
+        items: [],
+        messages: [
+            "(러닝 사진은 3장뿐. 나머지는 전부 '인문학 독서모임', '봉사활동' 단체사진이다)",
+            "(태그된 계정을 눌러보니 다른 크루 방장, 독서모임장, 타로 상담사... 같은 얼굴들이 돌아가며 등장한다)",
+            "(그때 하은에게 DM이 온다) \"OO님 혹시 지훈 오빠 인스타 보셨어요? ㅎㅎ 다들 좋은 사람들이에요~\""
+        ],
+        choices: [
+            { text: "📸 단체사진 캡처 후 \"이 모임들 다 한 단체죠?\" 단톡에 올린다", next: "ending_zoom_evidence", doubt: 40 },
+            { text: "(조용히 오픈채팅방을 나가고 차단한다)", next: "ending_crew_exit", doubt: 20 },
+            { text: "(내가 너무 예민한가..? 일단 정모만 가본다)", next: "c4_after_run", mentalDmg: 10 }
+        ],
+        timeout: { text: "(하은의 DM에 홀린 듯 '아 네 ㅎㅎ'라고 답했다)", next: "c4_after_run", mentalDmg: 10 }
+    },
+    c4_after_run: {
+        chapter: 4,
+        sender: "크루원 하은",
+        avatar: "🙋‍♀️",
+        bg: "bg-cafe",
+        location: "📍 정모 끝, 반포 편의점 앞 뒤풀이",
+        timeLimit: 10,
+        items: ["fake_call", "sinbul"],
+        messages: [
+            "(5km를 같이 뛴 뒤, 하은이 이온음료를 건넨다)",
+            "OO님 오늘 진짜 잘 뛰셨어요! 근데 표정이 좀 지쳐 보이시던데.. 요즘 회사 힘드시죠?",
+            "아 맞다! 우리 크루에 MBTI랑 사주 같이 봐주는 언니 있는데 완전 용해요 😳",
+            "언니가 무료로 줌 상담 해준대요! 30분만 해봐요~"
+        ],
+        choices: [
+            { text: "무료면 재밌겠다! 해볼게요", next: "c4_zoom", mentalDmg: 15 },
+            { text: "\"사주 상담이랑 러닝크루가 무슨 상관이에요?\"", next: "c4_guilt", doubt: 20 }
+        ],
+        timeout: { text: "(거절할 타이밍을 놓쳐 카톡 아이디를 알려줬다)", next: "c4_zoom", mentalDmg: 15 }
+    },
+    c4_guilt: {
+        chapter: 4,
+        sender: "크루원 하은",
+        avatar: "🥺",
+        bg: "bg-cafe",
+        location: "📍 서운함 공격",
+        timeLimit: 10,
+        items: ["fake_call"],
+        messages: [
+            "아.. 제가 괜히 오지랖 부렸나 봐요 ㅠㅠ",
+            "그냥 OO님이 요즘 힘들어 보여서.. 진짜 순수한 마음이었는데..",
+            "언니도 OO님 얘기 듣고 일부러 시간 빼놨다는데 어떡하지..."
+        ],
+        choices: [
+            { text: "아 아니에요! 그럼 딱 30분만 할게요", next: "c4_zoom", mentalDmg: 15 },
+            { text: "\"미안한데 제 시간은 제가 정할게요. 먼저 갈게요!\"", next: "ending_crew_exit", doubt: 20 }
+        ],
+        timeout: { text: "(미안한 마음에 고개를 끄덕였다)", next: "c4_zoom", mentalDmg: 15 }
+    },
+    c4_zoom: {
+        chapter: 4,
+        sender: "사주·MBTI 언니 [Zoom]",
+        avatar: "💻",
+        bg: "bg-phone",
+        location: "🎥 Zoom 비공개 상담방",
+        timeLimit: 10,
+        items: [],
+        messages: [
+            "OO님 반가워요~ 혹시 지금 혼자 계세요? 이어폰 끼셨어요?",
+            "아 그리고 상담 내용은 개인정보라 화면 캡처나 녹화는 절대 안 돼요 🙏",
+            "사주를 보니까.. 올해 삼재가 있고, 인생의 '근원적인 질문'에 답을 찾아야 풀리는 운이에요.",
+            "이건 사실 성경 속 비유로 풀어야 정확한데.. 일주일에 3번, 줌으로 같이 공부해볼래요?"
+        ],
+        choices: [
+            { text: "(📸 몰래 화면 녹화 버튼을 누른다)", next: "ending_zoom_evidence", doubt: 40 },
+            { text: "\"사주 보다가 갑자기 성경이요..?\" 줌을 나간다", next: "ending_crew_exit", doubt: 20 },
+            { text: "와 소름.. 저 요즘 진짜 그런 고민 있었어요. 할게요!", next: "c4_secret", mentalDmg: 25 }
+        ],
+        timeout: { text: "(언니가 '침묵은 긍정으로 알게요~'라며 다음 일정을 잡았다)", next: "c4_secret", mentalDmg: 25 }
+    },
+    c4_secret: {
+        chapter: 4,
+        sender: "사주·MBTI 언니 [Zoom]",
+        avatar: "💻",
+        bg: "bg-phone",
+        location: "🎥 3주차 비공개 스터디",
+        timeLimit: 10,
+        items: [],
+        messages: [
+            "(3주째 줌 공부 중. 크루 사람들은 이제 매일 안부 카톡을 보낸다)",
+            "OO님 진도 진짜 빠르다! 이제 오프라인 '센터' 갈 자격이 생겼어요 🎉",
+            "근데 이건 가족이나 회사 사람들한테는 '자기계발 스터디'라고만 해줘요.",
+            "진리를 모르는 사람들은 오해하고 방해하거든요. 우리끼리만 아는 거예요 🤫"
+        ],
+        choices: [
+            { text: "\"가족한테 숨기라는 순간 끝이에요.\" 엄마한테 바로 전화한다", next: "ending_crew_exit", doubt: 40 },
+            { text: "(가족한테는 자기계발 스터디라고 말해둔다)", next: "c4_quit_block", mentalDmg: 30 }
+        ],
+        timeout: { text: "(엄마에게 '요즘 스터디 다녀'라고 카톡을 보냈다)", next: "c4_quit_block", mentalDmg: 30 }
+    },
+    c4_quit_block: {
+        chapter: 4,
+        sender: "크루원 하은 외 7명",
+        avatar: "👥",
+        bg: "bg-phone",
+        location: "💬 '그만둘래요' 보낸 직후",
+        timeLimit: 10,
+        items: ["safety_app"],
+        messages: [
+            "(센터 2주차, 너무 지쳐서 '저 이제 그만할게요'라고 보냈다)",
+            "(1분 만에 부재중 전화 14통, 카톡 37개가 쌓인다)",
+            "\"OO님 지금 사탄이 틈탄 거예요. 지금 나가면 가족한테 안 좋은 일 생겨요.\"",
+            "\"저희 지금 OO님 회사 앞이에요. 잠깐 얼굴만 봐요.\""
+        ],
+        choices: [
+            { text: "🚨 112 신고 + 탈퇴 상담소에 연락한다", next: "ending_police_call", doubt: 50 },
+            { text: "(회사 앞에서 기다리는 그들을 만나러 내려간다)", next: "ending_crew_center", mentalDmg: 50 }
+        ],
+        timeout: { text: "(전화를 받아버렸다. 목소리를 듣자 다시 미안해졌다)", next: "ending_crew_center", mentalDmg: 50 }
     }
 };
 
@@ -504,25 +675,33 @@ const CHAPTER_INFO = [
     {
         id: 1,
         startKey: "c1_start",
-        tag: "?�천지 모략 ?�도",
-        title: "강남??11�?출구????,
-        desc: "?�툰 ?�문조사, ?�블�??�티�?붙이�? ?�형 ?�리검?? 룸카???�사귀 ?�입, ?�온?�터 감금!",
-        icon: "?��"
+        tag: "새하늘회 모략 전도",
+        title: "강남역 11번 출구의 덫",
+        desc: "웹툰 설문조사, 태블릿 스티커 붙이기, 도형 심리검사, 룸카페 잎사귀 투입, 새벽센터 감금!",
+        icon: "📍"
     },
     {
         id: 2,
         startKey: "c2_start",
-        tag: "?�?�진리회 치성/?�사",
-        title: "조상?�의 목마�?,
-        desc: "�?묻기 ?�장 ?�근, \"?�상??맑으?�데 조상???�한??..\", 간판 ?�는 빌라 ?�장�?100만원 치성�?광클 방어!",
-        icon: "?���?
+        tag: "대도진리원 치성/제사",
+        title: "조상님의 목마름",
+        desc: "길 묻기 위장 접근, \"인상이 맑으신데 조상님 원한이...\", 간판 없는 빌라 도장과 100만원 치성비 광클 방어!",
+        icon: "🕯️"
     },
     {
         id: 3,
         startKey: "c3_start",
-        tag: "?�모??& ?�애 ?�교",
-        title: "?�콤???�모?�과 ?�사귀",
-        desc: "?�모???�에??만난 ?�벽???�상?? 모든 ?�감�?공감??철�???기획??'?�사귀'??모략?�었?�면?",
-        icon: "?��"
+        tag: "소모임 & 연애 포교",
+        title: "달콤한 소모임과 잎사귀",
+        desc: "소모임 앱에서 만난 완벽한 이상형. 모든 호감과 공감이 철저히 기획된 '잎사귀'의 모략이었다면?",
+        icon: "💌"
+    },
+    {
+        id: 4,
+        startKey: "c4_start",
+        tag: "NEW · 러닝크루 & 줌 스터디",
+        title: "회비 0원 러닝크루의 비밀",
+        desc: "\"초보환영 회비 0원!\" 오픈채팅 러닝크루, 무료 사주·MBTI 줌 상담, 캡처 금지 비공개 스터디, 탈퇴하려는 순간 회사 앞 대기까지.",
+        icon: "🏃"
     }
 ];

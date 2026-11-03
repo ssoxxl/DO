@@ -2,22 +2,29 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>길거리 생존 시뮬레이션: 도를 아십니까 (The Do-Believer)</title>
     
     <!-- 메타 태그 & SEO & SNS 바이럴 (Open Graph) -->
-    <meta name="description" content="인상이 맑으시네요? 카톡 뷰 & 타임어택 & 태블릿 심리테스트 미니게임 탑재 실전 사이비 생존 시뮬레이션!">
+    <meta name="description" content="인상이 맑으시네요? 길거리·소모임·오픈채팅 포교에서 살아남는 실전 생존 시뮬레이션. 당신의 호구력은 몇 %?">
     <meta property="og:type" content="website">
     <meta property="og:title" content="도를 아십니까: 실전 생존 시뮬레이션">
-    <meta property="og:description" content="신천지, 대순진리회, 소모임 위장 포교 실시간 고증! 당신의 호구력 등급은?">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800&auto=format&fit=crop&q=80">
+    <meta property="og:description" content="설문조사, 도형 심리테스트, 러닝크루 오픈채팅까지. 실제 포교 수법 고증! 당신의 호구력은 몇 %?">
+    <!-- Pages 빌드에서 SITE_URL 또는 CF_PAGES_URL을 사용해 절대 URL로 치환 -->
+    <meta property="og:image" content="assets/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
 
     <!-- CSS 스타일시트 -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/adventure.css">
 
     <!-- html2canvas 라이브러리 (결과 카드 이미지 저장) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8390635644947402" crossorigin="anonymous"></script>
 </head>
 <body class="bg-street">
     <div id="app">
@@ -27,7 +34,7 @@
                 <span>👁️</span> 도를 아십니까
             </div>
             <div class="header-actions">
-                <button id="mute-toggle-btn" class="btn-header">🔊 사운드 ON</button>
+                <button id="mute-toggle-btn" class="btn-header">🔊 ON</button>
                 <button id="header-book-btn" class="btn-header">📖 도감</button>
                 <button id="header-guide-btn" class="btn-header">🚨 가이드</button>
             </div>
@@ -38,57 +45,33 @@
              ========================================== -->
         <main id="start-screen" class="screen active">
             <section class="hero-section">
-                <span class="hero-tag">실시간 메신저 & 타임어택 시뮬레이터</span>
-                <h1 class="hero-title">도를 아십니까?</h1>
+                <span class="hero-tag">A NIGHT IN SEOUL · PIXEL ADVENTURE</span>
+                <h1 class="hero-title">친절한 사람들.<br><em>이상한 밤.</em></h1>
                 <p class="hero-sub">
-                    "인상이 참 맑으시네요... 기운이 보이는데"<br>
-                    <strong>5초 타임어택</strong>과 <strong>태블릿 심리테스트</strong>의 덫을 피해보세요!
+                    집에 가던 길, 누군가 말을 걸었다.<br>
+                    거리를 걷고, 흔적을 살피고, 누구를 믿을지 결정해.<br>
+                    <strong>도를 아십니까 — 도시 생존 어드벤처</strong>
                 </p>
             </section>
 
             <!-- 챕터 선택 그리드 -->
             <section>
-                <h2 class="chapter-select-title">⚡ 플레이할 시나리오 선택</h2>
-                <div class="chapter-grid">
-                    <!-- 챕터 1: 신천지 모략 전도 -->
-                    <div class="chapter-card" onclick="game.startChapter(1)">
-                        <div class="chapter-card-header">
-                            <span class="chapter-badge">Chapter 1</span>
-                            <span class="chapter-name">📍 강남역 11번 출구의 덫</span>
-                        </div>
-                        <p class="chapter-desc">
-                            "웹툰 설문조사 1분만..." 태블릿 스티커 붙이기, 도형 심리테스트 낚시, 룸카페 잎사귀 투입과 시온센터 감금!
-                        </p>
-                    </div>
-
-                    <!-- 챕터 2: 대순진리회 조상 제사 -->
-                    <div class="chapter-card" onclick="game.startChapter(2)">
-                        <div class="chapter-card-header">
-                            <span class="chapter-badge">Chapter 2</span>
-                            <span class="chapter-name">🕯️ 조상님의 목마름</span>
-                        </div>
-                        <p class="chapter-desc">
-                            "길 좀 묻겠습니다. 조상님 원한이 깊어 보이네요..." 간판 없는 빌라 4층 치성소와 100만 원 송금 취소 10회 광클!
-                        </p>
-                    </div>
-
-                    <!-- 챕터 3: 소모임 & 데이팅앱 -->
-                    <div class="chapter-card" onclick="game.startChapter(3)">
-                        <div class="chapter-card-header">
-                            <span class="chapter-badge">Chapter 3</span>
-                            <span class="chapter-name">💌 달콤한 소모임과 잎사귀</span>
-                        </div>
-                        <p class="chapter-desc">
-                            와인 소모임 앱에서 만난 완벽한 이상형. 모든 호감과 공감이 철저히 기획된 '잎사귀'의 모략이었다면?
-                        </p>
-                    </div>
-                </div>
+                <h2 class="chapter-select-title">오늘 밤의 출발점 <span>SELECT A CHAPTER</span></h2>
+                <label class="reading-option"><input type="checkbox" id="reading-mode"> 여유롭게 읽기 · 선택 제한시간 끄기</label>
+                <p class="play-hint">방향키 / WASD로 이동 · E로 조사 · 모바일은 장소 터치<br>조사한 단서는 수첩에 남고, 대화에서 새로운 질문이 돼.</p>
+                <div id="challenge-banner" class="challenge-banner" style="display:none;"></div>
+                <div id="chapter-grid" class="chapter-grid"></div>
             </section>
 
             <!-- 애드센스 광고 슬롯 (시작 화면 하단) -->
             <div class="adsense-wrapper">
-                <span class="ad-notice">광고 영역 (Google AdSense)</span>
-                <div style="color: #666; font-size: 0.8rem;">[ 반응형 디스플레이 광고 배너 ]</div>
+                <ins class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8390635644947402"
+                     data-ad-slot="6177011985"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
             </div>
         </main>
 
@@ -96,14 +79,21 @@
              2. 게임 플레이 화면: 리얼 카톡/채팅 뷰
              ========================================== -->
         <main id="game-screen" class="screen">
-            <!-- 긴급 1회용 찬스 아이템 인벤토리 -->
-            <section class="inventory-section">
-                <div class="inventory-title">🎒 긴급 방어 아이템 (위기 시 1회 사용)</div>
-                <div id="inventory-items" class="inventory-grid"></div>
+            <section id="adventure-stage" aria-label="픽셀 어드벤처 탐색 화면">
+                <canvas id="world-canvas" width="480" height="270" aria-label="밤의 거리를 걷는 캐릭터와 주변 풍경"></canvas>
+                <div class="world-topbar"><span class="world-live">● EXPLORING</span><span id="world-location"></span><button id="world-exit" aria-label="챕터 선택으로 돌아가기">나가기 ↗</button></div>
+                <div class="world-objective"><small>지금 할 일</small><p id="world-objective">주변을 살펴보자.</p></div>
+                <div id="world-hotspots"></div>
+                <div id="world-notice" role="status" aria-live="polite"></div>
+                <div class="world-bottom"><span id="world-context">← → / WASD 이동 · E 조사</span><div class="walk-controls"><button id="walk-left" aria-label="왼쪽으로 이동">◀</button><button id="walk-right" aria-label="오른쪽으로 이동">▶</button></div><button id="world-interact">조사 / 대화 <kbd>E</kbd></button></div>
             </section>
-
+            <nav class="field-toolbar" aria-label="탐색 도구"><span id="world-state"></span><div><button id="journal-toggle">수첩 <span id="clue-count">0</span></button><button id="bag-toggle">소지품</button></div></nav>
+            <section id="field-journal" hidden><div class="journal-heading"><h2>밤의 기록</h2><button id="journal-close">닫기 ×</button></div><p>단서는 결론이 아니다. 서로 맞는지 확인해보자.</p><ul id="clue-list"></ul></section>
+            <section id="world-dialogue" hidden aria-label="대화창"><div class="dialogue-label"><span id="dialogue-speaker"></span><button id="dialogue-close">주변 둘러보기 ×</button></div><p id="dialogue-line" aria-live="polite"></p><button id="dialogue-next">계속 <span>SPACE ↵</span></button><div id="field-choices"></div><div id="field-timer"></div></section>
             <!-- 스마트폰 카톡 디바이스 프레임 -->
             <section class="chat-device-frame">
+                <div id="scene-art" class="scene-art" aria-hidden="true"></div>
+                <div class="journey-bar"><span id="journey-progress"></span><button class="btn-header" onclick="game.switchScreen('start-screen')">챕터 선택</button></div>
                 <!-- 상대방 프로필 헤더 -->
                 <div class="chat-profile-header">
                     <div id="chat-avatar" class="chat-avatar">👩‍🎓</div>
@@ -111,6 +101,7 @@
                         <span id="chat-sender-name" class="chat-sender-name">설문조사 대학생</span>
                         <span id="chat-location-badge" class="chat-location-badge">📍 강남역 11번 출구 앞</span>
                     </div>
+                    <span id="chat-mode-badge" class="chat-mode-badge">🗣️ 대면 상황</span>
                 </div>
 
                 <!-- 실시간 상태 HUD 바 -->
@@ -141,7 +132,7 @@
                 <!-- 타임어택 초시계 게이지 바 -->
                 <div id="timeattack-bar-wrap" class="timeattack-bar-wrap">
                     <div class="timeattack-header">
-                        <span id="timeattack-text" style="color: var(--accent-red);">⏱️ 5.0초 남음!</span>
+                        <span id="timeattack-text" style="color: var(--accent-red);">⏱️ 10.0초 남음!</span>
                         <span style="color: #888;">시간 초과 시 멘탈 감소 & 끌려감!</span>
                     </div>
                     <div class="timeattack-bar-bg">
@@ -152,6 +143,12 @@
 
             <!-- 답장 선택지 버튼 컨테이너 -->
             <section id="choices-container" class="choices-container"></section>
+
+            <!-- 긴급 1회용 찬스 아이템 인벤토리 -->
+            <section class="inventory-section">
+                <div class="inventory-title">🎒 긴급 방어 아이템 (상황에 맞을 때만 1회 사용)</div>
+                <div id="inventory-items" class="inventory-grid"></div>
+            </section>
         </main>
 
         <!-- ==========================================
@@ -165,11 +162,24 @@
                     <span id="collection-progress" style="font-size: 0.72rem; color: #888;"></span>
                 </div>
 
-                <div id="result-grade-badge" class="result-grade-badge">등급: S</div>
+                <div class="result-badge-row">
+                    <div id="result-grade-badge" class="result-grade-badge">등급: S</div>
+                    <span id="result-new-badge" class="result-new-badge">✨ NEW 엔딩</span>
+                </div>
                 <h2 id="result-title" class="result-title">엔딩 제목</h2>
                 <div id="result-subtitle" class="result-subtitle">엔딩 서브타이틀</div>
+                <div id="result-persona" class="result-persona"></div>
+
+                <div class="result-score-box">
+                    <div class="result-score-head">
+                        <span>🎣 나의 호구력 지수</span>
+                        <strong id="result-score">0%</strong>
+                    </div>
+                    <div class="timeattack-bar-bg"><div id="result-score-fill" class="result-score-fill"></div></div>
+                </div>
 
                 <p id="result-desc" class="result-desc">결과 설명 내용</p>
+                <details class="decision-review"><summary>내 선택 돌아보기</summary><ol id="decision-history"></ol></details>
 
                 <!-- 최종 스탯 요약 -->
                 <div class="final-stats-grid">
@@ -188,32 +198,35 @@
                 </div>
 
                 <div class="result-watermark">
-                    🔗 https://cult.yourdomain.com | 나도 테스트하기
+                    👁️ 도를 아십니까 생존 시뮬레이션 | 나도 테스트하기
                 </div>
             </section>
 
             <!-- 액션 버튼 -->
             <div class="action-btn-group">
-                <button id="btn-save-card" class="btn-primary">📸 결과 카드 이미지로 저장</button>
-                <button id="btn-copy-link" class="btn-secondary">🔗 친구에게 테스트 링크 공유</button>
+                <button id="btn-copy-link" class="btn-primary btn-share">🔗 친구에게 보낼 도전장 링크 복사</button>
+                <button id="btn-save-card" class="btn-secondary">📸 결과 카드 이미지로 저장</button>
+                <button onclick="game.retryChapter()" class="btn-secondary">↩️ 다른 선택 해보기 (같은 챕터)</button>
                 <button onclick="game.switchScreen('start-screen')" class="btn-secondary">🔄 다른 시나리오 도전하기</button>
             </div>
 
-            <!-- 워드프레스 메인 블로그 연동 배너 -->
-            <a href="https://yourdomain.com" target="_blank" class="blog-promo-banner">
-                <div>
-                    <div class="blog-promo-title">📖 [실화] 전직 신천지 탈퇴자가 밝히는 충격 썰</div>
-                    <div class="blog-promo-sub">블로그에서 더 많은 탈출 후기와 심리테스트를 확인하세요</div>
-                </div>
-                <div class="blog-promo-arrow">›</div>
-            </a>
-
             <!-- 애드센스 광고 슬롯 (결과 화면 하단) -->
             <div class="adsense-wrapper">
-                <span class="ad-notice">광고 영역 (Google AdSense)</span>
-                <div style="color: #666; font-size: 0.8rem;">[ 반응형 전면/디스플레이 광고 배너 ]</div>
+                <ins id="result-ad" class="adsbygoogle"
+                     style="display:block"
+                     data-ad-client="ca-pub-8390635644947402"
+                     data-ad-slot="6177011985"
+                     data-ad-format="auto"
+                     data-full-width-responsive="true"></ins>
+                <!-- 결과 화면이 열릴 때 game.loadResultAd()에서 로드 -->
             </div>
         </main>
+
+        <div id="game-toast" class="game-toast"></div>
+
+        <footer class="site-disclaimer">
+            본 게임에 등장하는 단체명·인물·지명 속 사건은 모두 가상이며, 언론 보도와 탈퇴자 증언으로 알려진 포교 수법을 재구성한 것입니다.
+        </footer>
 
         <!-- ==========================================
              4. 인터랙티브 미니게임 태블릿 모달
@@ -230,7 +243,7 @@
         <div id="collection-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h2 class="modal-title">📖 엔딩 도감 (총 12종)</h2>
+                    <h2 class="modal-title">📖 엔딩 도감 (총 15종)</h2>
                     <button id="close-collection-modal" class="modal-close-btn">&times;</button>
                 </div>
                 <div id="collection-list" class="collection-grid"></div>
@@ -250,6 +263,8 @@
                     <h3>1. 최신 접근 수법 (100% 식별법)</h3>
                     <p>• <strong>도형 심리테스트 & MBTI:</strong> 동그라미/세모/네모 그리게 한 뒤 "마음속에 결핍이 있다"며 멘토링 유도.</p>
                     <p>• <strong>2인 1조 모략 전도:</strong> 한 명은 설문조사원, 한 명은 우연히 지나가던 전문 멘토/선배인 척 연기.</p>
+                    <p>• <strong>러닝크루·독서모임 오픈채팅:</strong> "회비 0원·초보환영" 모임에서 1:1 DM으로 친밀감을 쌓은 뒤 무료 사주·MBTI·타로 상담으로 연결.</p>
+                    <p>• <strong>줌(Zoom) 비공개 스터디:</strong> "혼자 계세요?", "캡처·녹화 금지"를 먼저 확인한 뒤 성경 공부로 넘어감. 탈퇴하려 하면 단체 연락·회사 앞 대기.</p>
                     <p>• <strong>소모임/데이팅 앱 '잎사귀':</strong> 과도한 칭찬(사랑의 폭탄)으로 친밀감을 쌓은 뒤 스터디룸이나 센터로 유인.</p>
 
                     <div class="guide-callout">
@@ -265,10 +280,13 @@
                     <p>• <strong>112 경찰 신고:</strong> 집요하게 따라붙거나 길을 막으면 <code>[경범죄처벌법 제3조 제1항 제8호 (불안감 조성)]</code>으로 즉시 현장 출동 요청 가능.</p>
                     <p>• <strong>밀실 감금 시:</strong> 문을 막으면 형법상 <code>[감금죄]</code>, 돈을 요구하면 <code>[공갈/사기죄]</code>에 해당합니다.</p>
 
-                    <h3>4. 공인 피해 상담소 연락처</h3>
-                    <p>• <strong>한국기독교이단상담소협회:</strong> 031-475-3927</p>
-                    <p>• <strong>현대종교 이단문제 상담실:</strong> 02-439-4391</p>
-                    <p>• <strong>경찰청 긴급신고:</strong> 112</p>
+                    <div class="guide-callout">
+                        <strong>📸 증거 남기기:</strong> "캡처하지 마세요"라는 말이 나오면 오히려 화면 녹화·캡처를 남겨두세요. 상담소 상담과 신고 시 결정적인 자료가 됩니다.
+                    </div>
+
+                    <h3>4. 도움 요청하기</h3>
+                    <p>• <strong>위협·감금·스토킹:</strong> 경찰 긴급신고 <code>112</code> (말하기 어려우면 문자 신고 가능)</p>
+                    <p>• <strong>이단 상담:</strong> 한국기독교이단상담소협회, 현대종교 이단상담실 등 전문 상담소 (연락처는 포털에서 공식 정보로 확인하세요)</p>
                 </article>
             </div>
         </div>
@@ -278,7 +296,10 @@
     <script src="js/audio.js"></script>
     <script src="js/endings.js"></script>
     <script src="js/scenarios.js"></script>
+    <script src="js/expanded-scenarios.js"></script>
+    <script src="js/story-prologues.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/adventure.js"></script>
     <script src="js/share.js"></script>
 </body>
 </html>

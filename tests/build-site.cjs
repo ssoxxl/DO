@@ -1,0 +1,14 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),os=require('node:os'),path=require('node:path');
+const {build}=require('../scripts/build.cjs');
+const output=fs.mkdtempSync(path.join(os.tmpdir(),'do-site-build-'));
+build(output,'https://game.example.com/');
+const html=fs.readFileSync(path.join(output,'index.html'),'utf8');
+assert.match(html,/content="https:\/\/game.example.com\/assets\/og.png"/);
+assert.ok(fs.existsSync(path.join(output,'ads.txt')));
+assert.ok(fs.existsSync(path.join(output,'_headers')));
+assert.ok(fs.existsSync(path.join(output,'assets','pixel-worlds.png')));
+assert.ok(!fs.existsSync(path.join(output,'tests')));
+assert.ok(!fs.existsSync(path.join(output,'README.md')));
+for(const [,file] of html.matchAll(/(?:src|href)="((?:js|css)\/[^"]+)"/g))assert.ok(fs.existsSync(path.join(output,file)),`Missing ${file}`);
+assert.throws(()=>build(output,'javascript:alert(1)'));
+console.log('Pages build: all assets present, absolute OG URL, no test files.');
