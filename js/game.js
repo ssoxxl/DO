@@ -73,7 +73,7 @@ class CultSurvivalGame {
                 </div>
                 <span class="chapter-tag">${ch.tag}</span>
                 <p class="chapter-desc">${ch.desc}</p>
-                <span class="chapter-meta">${Object.values(SCENARIOS).filter(s => s.chapter === ch.id).length}개 장면 · 탐색과 대화<br>이 밤에 들어가기 ↗</span>
+                <span class="chapter-meta">${Object.values(SCENARIOS).filter(s => s.chapter === ch.id).length}개 장면 · 대화와 선택<br>이야기 시작하기 ↗</span>
             `;
             card.onclick = () => this.startChapter(ch.id);
             grid.appendChild(card);
@@ -682,6 +682,7 @@ class CultSurvivalGame {
         // 멘탈이 낮을수록 화면이 어두워지고 심장 소리가 빨라진다
         const app = document.getElementById('app');
         if (app) app.classList.toggle('low-mental', this.mental <= 30);
+        if (this.adventure) this.adventure.updateState();
         const bpm = this.ended || this.mental > 30 ? 0 : this.mental <= 15 ? 120 : 95;
         if (bpm !== this.heartBpm) {
             this.heartBpm = bpm;

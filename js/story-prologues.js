@@ -49,11 +49,28 @@
         ['연결의 조건','목요일, 같이 달릴래요?','생활을 바꾸고 싶어 들어간 러닝크루. 혼자가 아니어서 좋았다. 서로를 너무 잘 알게 되기 전까지는.']
     ];
     for(const chapter of CHAPTER_INFO) {
-        chapter.startKey=`c${chapter.id}_evening`;
+        chapter.startKey=`c${chapter.id}_first_meeting`;
+        delete SCENARIOS[`c${chapter.id}_evening`];
         [chapter.tag,chapter.title,chapter.desc]=descriptions[chapter.id-1];
     }
     SCENARIOS.c1_identity.choices[2].exposure=1;
     SCENARIOS.c4_rules.choices[2].exposure=2;
     SCENARIOS.c4_data.choices[2].exposure=2;
     SCENARIOS.c4_after_run.timeout.exposure=1;
+    Object.assign(SCENARIOS.c4_first_meeting, {
+        bg:'bg-street', sender:'러닝크루 방장 지훈', location:'📍 한강 산책로, 저녁 8시',
+        messages:['(혼자 달리다 숨을 고르고 있는데 러닝복을 입은 사람이 다가온다.)','“혹시 혼자 뛰세요? 저희 초보 크루인데 같이 한 바퀴 뛰실래요?”','“회비 같은 건 없어요. 저기 사람들도 다 처음 만났어요. 부담 없이요!”']
+    });
+    SCENARIOS.c4_first_meeting.choices=[
+        c('마침 혼자라 심심했는데, 같이 뛰어본다.','c4_start'),
+        c('어떤 모임인지 먼저 물어본다.','c4_rules',{doubt:8}),
+        c('오늘은 혼자 뛰겠다며 거리를 둔다.','c4_buddy',{doubt:5})
+    ];
+    Object.assign(SCENARIOS.c4_start, {
+        bg:'bg-street', location:'📍 한강 다리 아래, 러닝크루 첫 만남',
+        messages:['(방장이 손을 흔들자 크루원들이 밝게 인사한다.)','“새로 오신 분이에요! 오늘은 천천히 뛸 거니까 편하게 따라오세요.”','하은: “저도 시작한 지 얼마 안 됐어요. 힘들면 저랑 같이 걸어요!”']
+    });
+    SCENARIOS.c4_start.choices[0].text='함께 달리며 크루원들과 이야기를 나눈다.';
+    SCENARIOS.c4_start.choices[1].text='쉬는 동안 방장과 크루원들의 프로필을 확인한다.';
+    SCENARIOS.c4_start.choices[2].text='아직 어색해서 크루원들 뒤에서 조용히 따라간다.';
 })();

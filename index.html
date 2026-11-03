@@ -49,7 +49,7 @@
                 <h1 class="hero-title">친절한 사람들.<br><em>이상한 밤.</em></h1>
                 <p class="hero-sub">
                     집에 가던 길, 누군가 말을 걸었다.<br>
-                    거리를 걷고, 흔적을 살피고, 누구를 믿을지 결정해.<br>
+                    낯선 사람의 말에 어떻게 답할지 골라봐.<br>
                     <strong>도를 아십니까 — 도시 생존 어드벤처</strong>
                 </p>
             </section>
@@ -58,7 +58,7 @@
             <section>
                 <h2 class="chapter-select-title">오늘 밤의 출발점 <span>SELECT A CHAPTER</span></h2>
                 <label class="reading-option"><input type="checkbox" id="reading-mode"> 여유롭게 읽기 · 선택 제한시간 끄기</label>
-                <p class="play-hint">방향키 / WASD로 이동 · E로 조사 · 모바일은 장소 터치<br>조사한 단서는 수첩에 남고, 대화에서 새로운 질문이 돼.</p>
+                <p class="play-hint">챕터를 고르면 바로 대화가 시작돼. 대사를 읽고 답을 고르면 이야기가 이어져.</p>
                 <div id="challenge-banner" class="challenge-banner" style="display:none;"></div>
                 <div id="chapter-grid" class="chapter-grid"></div>
             </section>
@@ -79,17 +79,17 @@
              2. 게임 플레이 화면: 리얼 카톡/채팅 뷰
              ========================================== -->
         <main id="game-screen" class="screen">
-            <section id="adventure-stage" aria-label="픽셀 어드벤처 탐색 화면">
-                <canvas id="world-canvas" width="480" height="270" aria-label="밤의 거리를 걷는 캐릭터와 주변 풍경"></canvas>
-                <div class="world-topbar"><span class="world-live">● EXPLORING</span><span id="world-location"></span><button id="world-exit" aria-label="챕터 선택으로 돌아가기">나가기 ↗</button></div>
-                <div class="world-objective"><small>지금 할 일</small><p id="world-objective">주변을 살펴보자.</p></div>
-                <div id="world-hotspots"></div>
-                <div id="world-notice" role="status" aria-live="polite"></div>
-                <div class="world-bottom"><span id="world-context">← → / WASD 이동 · E 조사</span><div class="walk-controls"><button id="walk-left" aria-label="왼쪽으로 이동">◀</button><button id="walk-right" aria-label="오른쪽으로 이동">▶</button></div><button id="world-interact">조사 / 대화 <kbd>E</kbd></button></div>
+            <section class="encounter-status" aria-label="현재 상태">
+                <div><span>멘탈</span><strong id="status-mental">100 / 100</strong><div class="status-track"><i id="status-mental-bar"></i></div></div>
+                <div><span>의심</span><strong id="status-doubt">0 / 100</strong><div class="status-track"><i id="status-doubt-bar"></i></div></div>
+                <div><span>잔고</span><strong id="status-money">500,000원</strong><small>선택에 따라 변해</small></div>
             </section>
-            <nav class="field-toolbar" aria-label="탐색 도구"><span id="world-state"></span><div><button id="journal-toggle">수첩 <span id="clue-count">0</span></button><button id="bag-toggle">소지품</button></div></nav>
-            <section id="field-journal" hidden><div class="journal-heading"><h2>밤의 기록</h2><button id="journal-close">닫기 ×</button></div><p>단서는 결론이 아니다. 서로 맞는지 확인해보자.</p><ul id="clue-list"></ul></section>
-            <section id="world-dialogue" hidden aria-label="대화창"><div class="dialogue-label"><span id="dialogue-speaker"></span><button id="dialogue-close">주변 둘러보기 ×</button></div><p id="dialogue-line" aria-live="polite"></p><button id="dialogue-next">계속 <span>SPACE ↵</span></button><div id="field-choices"></div><div id="field-timer"></div></section>
+            <section id="adventure-stage" aria-label="인물이 다가와 말을 거는 장면">
+                <canvas id="world-canvas" width="480" height="270" aria-label="밤의 거리를 걷는 캐릭터와 주변 풍경"></canvas>
+                <div class="world-topbar"><span id="world-location"></span><button id="world-exit" aria-label="챕터 선택으로 돌아가기">챕터 선택 ↗</button></div>
+                <div id="encounter-caption"></div>
+            </section>
+            <section id="world-dialogue" hidden aria-label="대화와 선택지"><div class="dialogue-label"><span id="dialogue-speaker"></span><small>상대의 말</small></div><div id="dialogue-line" aria-live="polite"></div><p id="choice-prompt"></p><button id="dialogue-next" hidden>계속하기 →</button><div id="field-choices"></div><div id="field-timer"></div></section>
             <!-- 스마트폰 카톡 디바이스 프레임 -->
             <section class="chat-device-frame">
                 <div id="scene-art" class="scene-art" aria-hidden="true"></div>
