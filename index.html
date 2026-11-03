@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>길거리 생존 시뮬레이션: 도를 아십니까 (The Do-Believer)</title>
+    
+    <!-- 메타 태그 & SEO & 바이럴 공유 (Open Graph) -->
+    <meta name="description" content="인상이 맑으시네요? 당신의 호구력은 어느 정도일까요? 신천지, 대순진리회, 소모임 위장 포교 실전 시뮬레이션!">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="길거리 생존 시뮬레이션: 도를 아십니까">
+    <meta property="og:description" content="당신의 호구력 등급은? 강남역 설문조사부터 조상님 제사까지 실전 사이비 생존 테스트!">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800&auto=format&fit=crop&q=80">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- CSS 스타일시트 -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- html2canvas 라이브러리 (결과 카드 이미지 저장용) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- 상단 글로벌 네비게이션 헤더 -->
+        <header class="global-header">
+            <div class="brand-title">
+                <span>👁️</span> 도를 아십니까
+            </div>
+            <div class="header-actions">
+                <button id="mute-toggle-btn" class="btn-header">🔊 사운드 ON</button>
+                <button id="header-book-btn" class="btn-header">📖 도감</button>
+                <button id="header-guide-btn" class="btn-header">🚨 가이드</button>
+            </div>
+        </header>
+
+        <!-- ==========================================
+             1. 시작 화면 (챕터 선택 및 인트로)
+             ========================================== -->
+        <main id="start-screen" class="screen active">
+            <section class="hero-section">
+                <span class="hero-tag">실전 고증 생존 시뮬레이터</span>
+                <h1 class="hero-title">도를 아십니까?</h1>
+                <p class="hero-sub">
+                    "인상이 참 맑으시네요... 기운이 보이는데"<br>
+                    잠깐의 방심이 당신을 끝없는 수렁으로 이끕니다.
+                </p>
+            </section>
+
+            <!-- 챕터 선택 카드 그리드 -->
+            <section>
+                <h2 class="chapter-select-title">⚡ 플레이할 시나리오 선택</h2>
+                <div class="chapter-grid">
+                    <!-- 챕터 1: 신천지 모략 전도 -->
+                    <div class="chapter-card" onclick="game.startChapter(1)">
+                        <div class="chapter-card-header">
+                            <span class="chapter-badge">Chapter 1</span>
+                            <span class="chapter-name">📍 강남역 11번 출구의 덫</span>
+                        </div>
+                        <p class="chapter-desc">
+                            "웹툰 과제 설문조사 1분만..." 도형 심리테스트, 룸카페 잎사귀 투입, 시온센터 흰 셔츠 감금 위기!
+                        </p>
+                    </div>
+
+                    <!-- 챕터 2: 대순진리회 조상 제사 -->
+                    <div class="chapter-card" onclick="game.startChapter(2)">
+                        <div class="chapter-card-header">
+                            <span class="chapter-badge">Chapter 2</span>
+                            <span class="chapter-name">🕯️ 조상님의 목마름</span>
+                        </div>
+                        <p class="chapter-desc">
+                            "길 좀 묻겠습니다. 조상님 원한이 깊어 보이네요..." 간판 없는 빌라 4층 치성소와 제사비(치성비) 갈취!
+                        </p>
+                    </div>
+
+                    <!-- 챕터 3: 소모임 & 데이팅앱 -->
+                    <div class="chapter-card" onclick="game.startChapter(3)">
+                        <div class="chapter-card-header">
+                            <span class="chapter-badge">Chapter 3</span>
+                            <span class="chapter-name">💌 달콤한 소모임과 잎사귀</span>
+                        </div>
+                        <p class="chapter-desc">
+                            소모임 앱에서 만난 완벽한 이상형. 모든 호감과 공감이 철저히 기획된 '잎사귀'의 모략이었다면?
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 애드센스 광고 슬롯 (시작 화면 하단) -->
+            <div class="adsense-wrapper">
+                <span class="ad-notice">광고 영역 (Google AdSense)</span>
+                <!-- 여기에 실제 애드센스 코드 (ins 태그) 삽입 -->
+                <div style="color: #666; font-size: 0.8rem;">[ 반응형 디스플레이 광고 배너 ]</div>
+            </div>
+        </main>
+
+        <!-- ==========================================
+             2. 게임 플레이 화면
+             ========================================== -->
+        <main id="game-screen" class="screen">
+            <!-- 실시간 HUD (멘탈, 의심도, 잔고) -->
+            <section class="status-hud">
+                <div class="hud-row">
+                    <span class="hud-label">🧠 멘탈 (HP)</span>
+                    <div class="bar-wrap">
+                        <div id="mental-bar" class="bar-fill" style="width: 100%;"></div>
+                    </div>
+                    <span id="mental-value" class="hud-val">100%</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">🔍 눈치 / 의심도</span>
+                    <div class="bar-wrap">
+                        <div id="doubt-bar" class="bar-fill" style="width: 0%;"></div>
+                    </div>
+                    <span id="doubt-value" class="hud-val">0%</span>
+                </div>
+                <div class="hud-row">
+                    <span class="hud-label">💰 지갑 잔고</span>
+                    <span id="money-value" class="hud-val" style="color: var(--accent-yellow);">500,000원</span>
+                </div>
+            </section>
+
+            <!-- 1회용 찬스 아이템 슬롯 -->
+            <section class="inventory-section">
+                <div class="inventory-title">🎒 긴급 방어 아이템 (위기 시 1회 사용)</div>
+                <div id="inventory-items" class="inventory-grid">
+                    <!-- JS에서 동적 렌더링 -->
+                </div>
+            </section>
+
+            <!-- 스토리 텍스트 박스 -->
+            <section class="story-box">
+                <div class="scene-meta">
+                    <span id="scene-badge" class="scene-badge">위치</span>
+                    <span id="scene-title" class="scene-title">상황 제목</span>
+                </div>
+                <div id="story-text" class="story-content"></div>
+            </section>
+
+            <!-- 선택지 영역 -->
+            <section id="choices-container" class="choices-container"></section>
+        </main>
+
+        <!-- ==========================================
+             3. 결과 화면 & 이미지 캡처 카드
+             ========================================== -->
+        <main id="result-screen" class="screen">
+            <!-- 인스타/카톡 공유용 캡처 타겟 영역 -->
+            <section id="result-card-capture" class="result-card-wrap">
+                <div class="result-card-header">
+                    <span class="card-brand">길거리 생존 시뮬레이션: 도를 아십니까</span>
+                    <span id="collection-progress" style="font-size: 0.75rem; color: #888;"></span>
+                </div>
+
+                <div id="result-grade-badge" class="result-grade-badge">등급: S</div>
+                <h2 id="result-title" class="result-title">엔딩 제목</h2>
+                <div id="result-subtitle" class="result-subtitle">엔딩 서브타이틀</div>
+
+                <p id="result-desc" class="result-desc">결과 설명 내용</p>
+
+                <!-- 최종 스탯 요약 -->
+                <div class="final-stats-grid">
+                    <div class="final-stat-box">
+                        <span class="stat-box-label">최종 멘탈</span>
+                        <span id="stat-mental" class="stat-box-val">100%</span>
+                    </div>
+                    <div class="final-stat-box">
+                        <span class="stat-box-label">최종 의심도</span>
+                        <span id="stat-doubt" class="stat-box-val">0%</span>
+                    </div>
+                    <div class="final-stat-box">
+                        <span class="stat-box-label">남은 잔고</span>
+                        <span id="stat-money" class="stat-box-val">500,000원</span>
+                    </div>
+                </div>
+
+                <div class="result-watermark">
+                    🔗 https://cult.yourdomain.com | 나도 테스트하기
+                </div>
+            </section>
+
+            <!-- 액션 버튼 그룹 -->
+            <div class="action-btn-group">
+                <button id="btn-save-card" class="btn-primary">📸 결과 카드 이미지로 저장</button>
+                <button id="btn-copy-link" class="btn-secondary">🔗 친구에게 테스트 링크 공유</button>
+                <button onclick="game.switchScreen('start-screen')" class="btn-secondary">🔄 다른 시나리오 도전하기</button>
+            </div>
+
+            <!-- 워드프레스 메인 블로그 연동 배너 (트래픽 낙수 효과) -->
+            <a href="https://yourdomain.com" target="_blank" class="blog-promo-banner">
+                <div>
+                    <div class="blog-promo-title">📖 [실화] 전직 신천지 탈퇴자가 밝히는 충격 썰</div>
+                    <div class="blog-promo-sub">블로그에서 더 많은 탈출 후기와 심리테스트를 확인하세요</div>
+                </div>
+                <div class="blog-promo-arrow">›</div>
+            </a>
+
+            <!-- 애드센스 광고 슬롯 (결과 화면 하단) -->
+            <div class="adsense-wrapper">
+                <span class="ad-notice">광고 영역 (Google AdSense)</span>
+                <!-- 여기에 실제 애드센스 코드 (ins 태그) 삽입 -->
+                <div style="color: #666; font-size: 0.8rem;">[ 반응형 전면/디스플레이 광고 배너 ]</div>
+            </div>
+        </main>
+
+        <!-- ==========================================
+             4. 엔딩 도감 모달
+             ========================================== -->
+        <div id="collection-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">📖 엔딩 도감 (총 12종)</h2>
+                    <button id="close-collection-modal" class="modal-close-btn">&times;</button>
+                </div>
+                <div id="collection-list" class="collection-grid">
+                    <!-- JS에서 동적 렌더링 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             5. 실전 사이비 대처 가이드 모달
+             ========================================== -->
+        <div id="guide-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">🚨 실전 사이비 대처 매뉴얼</h2>
+                    <button id="close-guide-modal" class="modal-close-btn">&times;</button>
+                </div>
+                <article class="guide-article">
+                    <h3>1. 최신 접근 수법 (100% 식별법)</h3>
+                    <p>• <strong>도형 심리테스트 & MBTI:</strong> 동그라미/세모/네모 그리게 한 뒤 "마음속에 결핍이 있다"며 멘토링 유도.</p>
+                    <p>• <strong>2인 1조 모략 전도:</strong> 한 명은 설문조사원, 한 명은 우연히 지나가던 전문 멘토/선배인 척 연기.</p>
+                    <p>• <strong>소모임/데이팅 앱 '잎사귀':</strong> 과도한 칭찬(사랑의 폭탄)으로 친밀감을 쌓은 뒤 스터디룸이나 센터로 유인.</p>
+
+                    <div class="guide-callout">
+                        <strong>⚠️ 황금 룰:</strong> "가족이나 친구에게 비밀로 하라"는 모임이나 공부는 <strong>100% 사이비/이단</strong>입니다.
+                    </div>
+
+                    <h3>2. 철벽 방어 멘트 모음</h3>
+                    <p>• <strong>신용불량자 드립:</strong> "저 빚만 2억인데 조상님이 갚아주시나요? 돈 100원도 없어요." (사이비는 돈 안 되는 대상은 즉시 버립니다)</p>
+                    <p>• <strong>미성년자/신학생 드립:</strong> "저 고1인데요?", "저 장로회신학대학교 신학과 재학 중입니다."</p>
+
+                    <h3>3. 법적 대응 및 신고 방법</h3>
+                    <p>• <strong>안전신문고 앱:</strong> 길거리 테이블/배너는 <code>[불법 적치물 및 노상적치물]</code>로 촬영 신고 시 지자체 과태료 부과.</p>
+                    <p>• <strong>112 경찰 신고:</strong> 집요하게 따라붙거나 길을 막으면 <code>[경범죄처벌법 제3조 제1항 제8호 (불안감 조성)]</code>으로 즉시 현장 출동 요청 가능.</p>
+                    <p>• <strong>밀실 감금 시:</strong> 문을 막으면 형법상 <code>[감금죄]</code>, 돈을 요구하면 <code>[공갈/사기죄]</code>에 해당합니다.</p>
+
+                    <h3>4. 공인 피해 상담소 연락처</h3>
+                    <p>• <strong>한국기독교이단상담소협회:</strong> 031-475-3927</p>
+                    <p>• <strong>현대종교 이단문제 상담실:</strong> 02-439-4391</p>
+                    <p>• <strong>경찰청 긴급신고:</strong> 112</p>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <!-- 스크립트 파일 로드 순서 -->
+    <script src="js/audio.js"></script>
+    <script src="js/endings.js"></script>
+    <script src="js/scenarios.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/share.js"></script>
+</body>
+</html>
