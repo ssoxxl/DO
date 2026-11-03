@@ -286,6 +286,25 @@ class SoundController {
         noise.stop(now + 0.25);
     }
 
+    // 아이템 사용음 (짧게 올라가는 차임)
+    playItemUse() {
+        if (this.isMuted || !this.ctx) return;
+        const now = this.ctx.currentTime;
+        [660, 990].forEach((freq, idx) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const time = now + idx * 0.08;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, time);
+            gain.gain.setValueAtTime(0.18, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(time);
+            osc.stop(time + 0.22);
+        });
+    }
+
     // 11. 승리 팬파레
     playVictory() {
         this.stopHeartbeatLoop();

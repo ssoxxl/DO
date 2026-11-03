@@ -1,4 +1,15 @@
 // 리얼 카톡/채팅 뷰 & 타임어택 & 미니게임 게임 엔진
+
+// 씬에 items 지정이 없을 때 배경별로 쓸 수 있는 아이템
+const ITEMS_BY_BG = {
+    'bg-street': ['airpods', 'sinbul', 'safety_app', 'fake_call'],
+    'bg-cafe': ['sinbul', 'fake_call'],
+    'bg-bar': ['fake_call'],
+    'bg-altar': ['sinbul', 'safety_app'],
+    'bg-center': [],
+    'bg-phone': []
+};
+
 class CultSurvivalGame {
     constructor() {
         this.mental = 100;
@@ -7,25 +18,31 @@ class CultSurvivalGame {
         this.currentScenarioKey = null;
         this.currentChapterId = 1;
         this.isFakeActive = false;
+        this.choicesReady = false;
+        this.ended = false;
+
+        // 지연 실행 관리 (챕터 재시작/엔딩 시 남은 연출이 끼어들지 않도록)
+        this.pending = [];
 
         // 타임어택 관리
         this.timerInterval = null;
         this.timeRemaining = 0;
-        this.maxTime = 5;
+        this.maxTime = 10;
 
         // 미니게임 상태
-        this.tapCount = 10;
+        this.tapCount = 15;
         this.tapTimer = null;
 
         // 긴급 찬스 아이템
         this.items = {
             airpods: { name: "노캔 에어팟", count: 1, icon: "🎧", desc: "길거리 포교 즉시 무시" },
             sinbul: { name: "신불자 명함", count: 1, icon: "💳", desc: "\"저 빚만 2억인데요?\"" },
-            safety_app: { name: "안전신문고", count: 1, icon: "🚨", desc: "불법 적치물/경범죄 112 신고" },
+            safety_app: { name: "112·안전신문고", count: 1, icon: "🚨", desc: "불법 적치물/경범죄 112 신고" },
             fake_call: { name: "엄마 가짜전화", count: 1, icon: "📱", desc: "긴급 전력질주 탈출" }
         };
 
         this.initEventListeners();
+        this.renderChapterGrid();
     }
 
     initEventListeners() {
@@ -33,33 +50,69 @@ class CultSurvivalGame {
         if (muteBtn) {
             muteBtn.onclick = () => {
                 const muted = audio.toggleMute();
-                muteBtn.innerText = muted ? "🔇 사운드 OFF" : "🔊 사운드 ON";
+                muteBtn.innerText = muted ? "🔇 OFF" : "🔊 ON";
             };
+        }
+    }
+
+    renderChapterGrid() {
+        const grid = document.getElementById('chapter-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        CHAPTER_INFO.forEach(ch => {
+            const card = document.createElement('div');
+            card.className = 'chapter-card' + (ch.tag.startsWith('NEW') ? ' chapter-new' : '');
+            card.innerHTML = `
+                <div class="chapter-card-header">
+                    <span class="chapter-badge">Chapter ${ch.id}</span>
+                    <span class="chapter-name">${ch.icon} ${ch.title}</span>
+                </div>
+                <span class="chapter-tag">${ch.tag}</span>
+                <p class="chapter-desc">${ch.desc}</p>
+            `;
+            card.onclick = () => this.startChapter(ch.id);
+            grid.appendChild(card);
+        });
+    }
+
+    later(fn, ms) {
+        const id = setTimeout(() => {
+            this.pending = this.pending.filter(p => p !== id);
+            fn();
+        }, ms);
+        this.pending.push(id);
+    }
+
+    cancelPending() {
+        this.pending.forEach(id => clearTimeout(id));
+        this.pending = [];
+        if (this.tapTimer) {
+            clearInterval(this.tapTimer);
+            this.tapTimer = null;
         }
     }
 
     startChapter(chapterId) {
         audio.init();
+        this.cancelPending();
         this.currentChapterId = chapterId;
         this.mental = 100;
         this.doubt = 0;
         this.money = 500000;
         this.isFakeActive = false;
+        this.choicesReady = false;
+        this.ended = false;
         this.clearTimer();
+        this.hideTimer();
 
-        // 아이템 초기화
-        this.items.airpods.count = 1;
-        this.items.sinbul.count = 1;
-        this.items.safety_app.count = 1;
-        this.items.fake_call.count = 1;
+        Object.values(this.items).forEach(it => it.count = 1);
 
-        // 채팅창 비우기
         const chatBox = document.getElementById('chat-messages-container');
         if (chatBox) chatBox.innerHTML = '';
+        document.getElementById('minigame-modal').classList.remove('active');
 
         this.switchScreen('game-screen');
         this.updateHUD();
-        this.renderInventory();
 
         const chapter = CHAPTER_INFO.find(c => c.id === chapterId);
         if (chapter) {
@@ -68,7 +121,9 @@ class CultSurvivalGame {
     }
 
     showScenario(key) {
+        if (this.ended) return;
         this.clearTimer();
+        this.choicesReady = false;
 
         if (ENDINGS[key]) {
             this.triggerEnding(key);
@@ -82,6 +137,7 @@ class CultSurvivalGame {
         }
 
         this.currentScenarioKey = key;
+        this.renderInventory();
 
         // 배경 전환
         document.body.className = scene.bg || 'bg-street';
@@ -90,41 +146,66 @@ class CultSurvivalGame {
         document.getElementById('chat-avatar').innerText = scene.avatar || "👤";
         document.getElementById('chat-sender-name').innerText = scene.sender || "상대방";
         document.getElementById('chat-location-badge').innerText = scene.location || "";
+        const modeBadge = document.getElementById('chat-mode-badge');
+        if (modeBadge) {
+            modeBadge.innerText = scene.bg === 'bg-phone' ? '💬 메신저' : '🗣️ 대면 상황';
+        }
 
-        // 미니게임 체크
         if (scene.minigame) {
-            this.renderMinigame(scene);
+            this.renderChatMessages(scene, () => this.renderMinigame(scene));
             return;
         }
 
-        // 카톡 말풍선 순차 출력
-        this.renderChatMessages(scene);
+        this.renderChatMessages(scene, () => this.renderChoices(scene));
     }
 
-    // 카톡 말풍선 순차 렌더링
-    renderChatMessages(scene) {
-        const chatBox = document.getElementById('chat-messages-container');
+    // 말풍선 순차 렌더링 후 onDone 실행
+    renderChatMessages(scene, onDone) {
         const choicesArea = document.getElementById('choices-container');
         choicesArea.innerHTML = '';
         this.hideTimer();
 
-        // 상대방 메시지를 하나씩 0.35초 간격으로 추가
-        let delay = 0;
+        this.appendDivider(scene.location);
+
+        let delay = 300;
         scene.messages.forEach((msg, idx) => {
-            setTimeout(() => {
-                this.appendOtherMessage(scene.avatar, scene.sender, msg);
-                audio.playMessagePop();
+            this.later(() => {
+                if (this.isNarration(msg)) {
+                    this.appendNarration(msg);
+                } else {
+                    this.appendOtherMessage(scene.avatar, scene.sender, msg);
+                    audio.playMessagePop();
+                }
                 this.scrollChatToBottom();
 
-                // 모든 메시지 출력 완료 후 선택지 표시 및 타임어택 가동
                 if (idx === scene.messages.length - 1) {
-                    setTimeout(() => {
-                        this.renderChoices(scene);
-                    }, 300);
+                    this.later(onDone, 350);
                 }
             }, delay);
-            delay += 450;
+            // 긴 문장일수록 읽을 시간을 조금 더 준다
+            delay += Math.min(1100, 450 + msg.length * 12);
         });
+    }
+
+    isNarration(text) {
+        return text.startsWith('(') || text.startsWith('⚠️');
+    }
+
+    appendDivider(text) {
+        if (!text) return;
+        const chatBox = document.getElementById('chat-messages-container');
+        const div = document.createElement('div');
+        div.className = 'chat-divider';
+        div.innerText = text;
+        chatBox.appendChild(div);
+    }
+
+    appendNarration(text) {
+        const chatBox = document.getElementById('chat-messages-container');
+        const div = document.createElement('div');
+        div.className = 'chat-narration';
+        div.innerText = text.replace(/^\(|\)$/g, '');
+        chatBox.appendChild(div);
     }
 
     appendOtherMessage(avatar, name, text) {
@@ -164,6 +245,8 @@ class CultSurvivalGame {
         const container = document.getElementById('choices-container');
         container.innerHTML = '';
         this.isFakeActive = false;
+        this.choicesReady = true;
+        this.renderInventory();
 
         scene.choices.forEach(choice => {
             const btn = document.createElement('button');
@@ -184,6 +267,7 @@ class CultSurvivalGame {
                 };
             } else {
                 btn.onclick = () => {
+                    if (!this.choicesReady) return;
                     this.clearTimer();
                     this.selectChoice(choice);
                 };
@@ -191,66 +275,76 @@ class CultSurvivalGame {
             container.appendChild(btn);
         });
 
-        // 타임어택 시작
         if (scene.timeLimit && scene.timeLimit > 0) {
             this.startTimer(scene.timeLimit, scene.timeout);
         }
     }
 
     selectChoice(choice) {
+        this.choicesReady = false;
+        document.getElementById('choices-container').innerHTML = '';
+        this.hideTimer();
+        this.renderInventory();
+
         audio.playSendClick();
         this.appendMyMessage(choice.text);
+        this.applyStats(choice);
 
-        // 멘탈 데미지
-        if (choice.mentalDmg) {
-            this.mental -= choice.mentalDmg;
+        if (this.checkLimits()) return;
+
+        if (choice.next) {
+            this.later(() => this.showScenario(choice.next), 600);
+        }
+    }
+
+    applyStats(data) {
+        if (data.mentalDmg) {
+            this.mental -= data.mentalDmg;
             audio.playDamage();
             this.shakeScreen();
             this.vibrate(200);
+            this.floatStat(`🧠 -${data.mentalDmg}`, 'neg');
         }
-
-        // 의심도 증가
-        if (choice.doubt) {
-            this.doubt += choice.doubt;
+        if (data.doubt) {
+            this.doubt = Math.min(100, this.doubt + data.doubt);
             audio.playDoubtUp();
+            this.floatStat(`🔍 +${data.doubt}`, 'pos');
         }
-
-        // 지갑 잔고 손실
-        if (choice.moneyDmg) {
-            this.money = Math.max(0, this.money - choice.moneyDmg);
+        if (data.moneyDmg) {
+            this.money = Math.max(0, this.money - data.moneyDmg);
             audio.playMoneyLost();
+            this.floatStat(`💰 -${data.moneyDmg.toLocaleString()}`, 'neg');
         }
-
         this.updateHUD();
+    }
 
-        // 상태 한계 체크
+    // 상태 한계 체크: 엔딩으로 넘어갔으면 true
+    checkLimits() {
+        let ending = null;
         if (this.mental <= 0) {
-            setTimeout(() => {
-                this.triggerEnding(this.currentChapterId === 2 ? 'ending_ancestor_debt' : 'ending_center_114');
-            }, 600);
-            return;
+            ending = this.currentChapterId === 2 ? 'ending_ancestor_debt'
+                : this.currentChapterId === 3 ? 'ending_cult_leaf'
+                : this.currentChapterId === 4 ? 'ending_crew_center'
+                : 'ending_center_114';
+        } else if (this.money <= 0) {
+            ending = 'ending_broke';
+        } else if (this.doubt >= 80) {
+            ending = 'ending_police_call';
         }
+        if (!ending) return false;
+        this.later(() => this.triggerEnding(ending), 700);
+        return true;
+    }
 
-        if (this.money <= 0) {
-            setTimeout(() => {
-                this.triggerEnding('ending_broke');
-            }, 600);
-            return;
-        }
-
-        if (this.doubt >= 80) {
-            setTimeout(() => {
-                this.triggerEnding('ending_police_call');
-            }, 600);
-            return;
-        }
-
-        // 다음 씬 이동 (약간의 딜레이로 실시간 느낌 조성)
-        if (choice.next) {
-            setTimeout(() => {
-                this.showScenario(choice.next);
-            }, 500);
-        }
+    // 작은 스탯 변화 팝업
+    floatStat(text, kind) {
+        const hud = document.querySelector('.chat-hud-bar');
+        if (!hud) return;
+        const el = document.createElement('span');
+        el.className = `stat-float ${kind}`;
+        el.innerText = text;
+        hud.appendChild(el);
+        setTimeout(() => el.remove(), 1100);
     }
 
     // ==========================================
@@ -271,21 +365,25 @@ class CultSurvivalGame {
         timerText.innerText = `⏱️ ${this.timeRemaining.toFixed(1)}초 남음!`;
 
         const intervalMs = 100;
+        let lastTick = Infinity;
         this.timerInterval = setInterval(() => {
             this.timeRemaining -= intervalMs / 1000;
             const pct = Math.max(0, (this.timeRemaining / this.maxTime) * 100);
             timerFill.style.width = pct + '%';
             timerText.innerText = `⏱️ ${Math.max(0, this.timeRemaining).toFixed(1)}초`;
 
-            // 긴급 경고 (2초 이하)
-            if (this.timeRemaining <= 2.5) {
+            if (this.timeRemaining <= 3) {
                 timerFill.style.backgroundColor = '#ff0055';
-                audio.playTick();
-            } else if (this.timeRemaining <= 4) {
+                // 1초마다 한 번만 째깍
+                const sec = Math.ceil(this.timeRemaining);
+                if (sec < lastTick) {
+                    lastTick = sec;
+                    audio.playTick();
+                }
+            } else if (this.timeRemaining <= 5) {
                 timerFill.style.backgroundColor = '#ffbb00';
             }
 
-            // 타임 오버
             if (this.timeRemaining <= 0) {
                 this.clearTimer();
                 this.handleTimeout(timeoutData);
@@ -306,25 +404,25 @@ class CultSurvivalGame {
     }
 
     handleTimeout(timeoutData) {
-        audio.playDamage();
-        this.shakeScreen();
+        this.choicesReady = false;
+        document.getElementById('choices-container').innerHTML = '';
+        this.hideTimer();
+        this.renderInventory();
         this.vibrate([100, 100, 100]);
 
         const timeoutMsg = timeoutData && timeoutData.text ? timeoutData.text : "어버버... (아무 말도 하지 못했다)";
         this.appendMyMessage(`⚠️ [시간 초과!] ${timeoutMsg}`);
 
-        if (timeoutData && timeoutData.mentalDmg) {
-            this.mental -= timeoutData.mentalDmg;
-            this.updateHUD();
-        }
+        if (timeoutData) this.applyStats(timeoutData);
+        if (this.checkLimits()) return;
 
-        setTimeout(() => {
+        this.later(() => {
             if (timeoutData && timeoutData.next) {
                 this.showScenario(timeoutData.next);
             } else {
                 this.triggerEnding('ending_center_114');
             }
-        }, 800);
+        }, 900);
     }
 
     // ==========================================
@@ -349,6 +447,7 @@ class CultSurvivalGame {
                     <div class="sticker-palette">
                         <div id="draggable-heart-sticker" class="heart-sticker">💖 꾹 눌러서 붙이기!</div>
                     </div>
+                    <p class="tablet-footnote">※ 이 설문지 답변은 '고민 많은 사람' 명단으로 따로 분류됩니다.</p>
                 </div>
             `;
 
@@ -356,13 +455,14 @@ class CultSurvivalGame {
             const target = document.getElementById('placed-sticker-slot');
 
             sticker.onclick = () => {
+                sticker.onclick = null;
                 audio.playStickerSnap();
                 this.vibrate(100);
                 target.innerHTML = `<span style="font-size:2.5rem; animation:popIn 0.3s;">💖</span>`;
                 sticker.style.opacity = '0.3';
                 sticker.innerText = "부착 완료!";
 
-                setTimeout(() => {
+                this.later(() => {
                     modal.classList.remove('active');
                     this.appendMyMessage("스티커를 붙여주었다.");
                     this.showScenario(scene.nextAfterMinigame);
@@ -370,66 +470,86 @@ class CultSurvivalGame {
             };
 
         } else if (scene.minigame === 'shape') {
+            const shapes = [
+                ['동그라미(○)', '⭕', '동그라미', '관계 지향형'],
+                ['세모(△)', '🔺', '세모', '성취 주도형'],
+                ['네모(□)', '⏹️', '네모', '원칙 신중형'],
+                ['지그재그(S)', '⚡', '지그재그(S)', '창의 감성형']
+            ];
             body.innerHTML = `
                 <div class="tablet-frame">
                     <div class="tablet-header">🔮 도형 성향 심리테스트</div>
                     <p class="tablet-question">가장 마음이 끌리는 도형 1개를 터치하세요!</p>
-                    <div class="shapes-grid">
-                        <button class="shape-card" onclick="game.selectShape('동그라미(○)', '${scene.nextAfterMinigame}')">
-                            <span class="shape-icon">⭕</span>
-                            <span class="shape-title">동그라미</span>
-                            <span class="shape-desc">관계 지향형</span>
-                        </button>
-                        <button class="shape-card" onclick="game.selectShape('세모(△)', '${scene.nextAfterMinigame}')">
-                            <span class="shape-icon">🔺</span>
-                            <span class="shape-title">세모</span>
-                            <span class="shape-desc">성취 주도형</span>
-                        </button>
-                        <button class="shape-card" onclick="game.selectShape('네모(□)', '${scene.nextAfterMinigame}')">
-                            <span class="shape-icon">⏹️</span>
-                            <span class="shape-title">네모</span>
-                            <span class="shape-desc">원칙 신중형</span>
-                        </button>
-                        <button class="shape-card" onclick="game.selectShape('지그재그(S)', '${scene.nextAfterMinigame}')">
-                            <span class="shape-icon">⚡</span>
-                            <span class="shape-title">지그재그(S)</span>
-                            <span class="shape-desc">창의 감성형</span>
-                        </button>
-                    </div>
+                    <div class="shapes-grid"></div>
                 </div>
             `;
+            const grid = body.querySelector('.shapes-grid');
+            shapes.forEach(([name, icon, title, desc]) => {
+                const btn = document.createElement('button');
+                btn.className = 'shape-card';
+                btn.innerHTML = `<span class="shape-icon">${icon}</span><span class="shape-title">${title}</span><span class="shape-desc">${desc}</span>`;
+                btn.onclick = () => this.selectShape(name, scene.nextAfterMinigame);
+                grid.appendChild(btn);
+            });
+
         } else if (scene.minigame === 'tap_cancel') {
-            this.tapCount = 10;
+            const goal = 15;
+            const limit = 5;
+            this.tapCount = goal;
+            let left = limit;
             body.innerHTML = `
                 <div class="tablet-frame" style="border-color: #ff0055;">
-                    <div class="tablet-header" style="color: #ff0055;">⚠️ [위기] 카카오페이 100만 원 송금 승인 중!</div>
-                    <p class="tablet-question">선감이 폰을 뺏어 송금 버튼을 누르려 합니다!<br><strong>[송금 취소]</strong> 버튼을 10번 광클해서 막아내세요!</p>
-                    
+                    <div class="tablet-header" style="color: #ff0055;">⚠️ [위기] 간편송금 1,000,000원 승인 중!</div>
+                    <p class="tablet-question">선감이 폰을 뺏어 송금 버튼을 누르려 합니다!<br><strong>${limit}초 안에 [송금 취소]를 ${goal}번</strong> 연타하세요!</p>
+
                     <div class="tap-counter-box">
-                        남은 연타 횟수: <span id="tap-remaining-count" style="color: #ff0055; font-size: 2rem;">10</span>회
+                        남은 연타: <span id="tap-remaining-count" style="color: #ff0055; font-size: 2rem;">${goal}</span>회
+                        · <span id="tap-time-left">${limit.toFixed(1)}</span>초
                     </div>
+                    <div class="timeattack-bar-bg"><div id="tap-progress" class="timeattack-bar-fill" style="width:0%; background:#00ffcc;"></div></div>
 
                     <button id="tap-cancel-action-btn" class="tap-giant-btn">
-                        🚨 송금 취소 연타!! (클릭!)
+                        🚨 송금 취소!! (연타!)
                     </button>
                 </div>
             `;
 
             const tapBtn = document.getElementById('tap-cancel-action-btn');
             const countElem = document.getElementById('tap-remaining-count');
+            const timeElem = document.getElementById('tap-time-left');
+            const progress = document.getElementById('tap-progress');
+
+            const finish = (success) => {
+                clearInterval(this.tapTimer);
+                this.tapTimer = null;
+                tapBtn.onclick = null;
+                this.later(() => {
+                    modal.classList.remove('active');
+                    if (success) {
+                        this.appendMyMessage("🛡️ 송금 취소 성공! 폰을 낚아채 주머니에 넣었다.");
+                        this.later(() => this.triggerEnding(scene.nextAfterMinigame), 900);
+                    } else {
+                        this.appendMyMessage("💸 [송금 완료] 1,000,000원이 빠져나갔다...");
+                        this.applyStats({ moneyDmg: 500000, mentalDmg: 30 });
+                        this.later(() => this.triggerEnding(scene.failEnding || 'ending_ancestor_debt'), 1200);
+                    }
+                }, 400);
+            };
+
+            this.tapTimer = setInterval(() => {
+                left -= 0.1;
+                timeElem.innerText = Math.max(0, left).toFixed(1);
+                if (left <= 0) finish(false);
+            }, 100);
 
             tapBtn.onclick = () => {
                 this.tapCount--;
                 audio.playTapSuccess();
-                this.vibrate(50);
-                countElem.innerText = this.tapCount;
-                tapBtn.style.transform = `scale(${0.92 + Math.random() * 0.15})`;
-
-                if (this.tapCount <= 0) {
-                    modal.classList.remove('active');
-                    alert("🛡️ 송금 취소 성공! 지갑 잔고를 완벽하게 지켜냈습니다!");
-                    this.triggerEnding(scene.nextAfterMinigame);
-                }
+                this.vibrate(30);
+                countElem.innerText = Math.max(0, this.tapCount);
+                progress.style.width = ((goal - this.tapCount) / goal * 100) + '%';
+                tapBtn.style.transform = `scale(${0.92 + Math.random() * 0.15}) rotate(${(Math.random() - 0.5) * 6}deg)`;
+                if (this.tapCount <= 0) finish(true);
             };
         }
     }
@@ -439,55 +559,79 @@ class CultSurvivalGame {
         this.vibrate(100);
         document.getElementById('minigame-modal').classList.remove('active');
         this.appendMyMessage(`[도형 테스트] ${shapeName}을 선택했다.`);
-        setTimeout(() => {
-            this.showScenario(nextKey);
-        }, 500);
+        this.later(() => this.showScenario(nextKey), 500);
     }
 
-    // 아이템 사용 로직
+    // ==========================================
+    // 긴급 아이템
+    // ==========================================
+    availableItems() {
+        const scene = SCENARIOS[this.currentScenarioKey];
+        if (!scene) return [];
+        return scene.items || ITEMS_BY_BG[scene.bg] || [];
+    }
+
     useItem(itemKey) {
         const item = this.items[itemKey];
         if (!item || item.count <= 0) return;
 
+        if (!this.choicesReady || !this.availableItems().includes(itemKey)) {
+            this.showToast(`${item.icon} 지금 상황에서는 ${item.name}을(를) 쓸 수 없다!`, 'warn');
+            return;
+        }
+
         this.clearTimer();
+        this.hideTimer();
+        this.choicesReady = false;
+        document.getElementById('choices-container').innerHTML = '';
         audio.playItemUse();
         item.count--;
         this.renderInventory();
 
-        if (itemKey === 'airpods') {
-            alert("🎧 노이즈 캔슬링 에어팟 장착!\n주변의 잡소리를 완벽히 차단하고 지나갑니다.");
-            this.triggerEnding('ending_ironwall');
-        } else if (itemKey === 'sinbul') {
-            alert("💳 \"저 신용불량자이고 통장 압류 들어왔는데요?\"\n포교원들이 서로 눈빛을 주고받더니 조용히 사라집니다.");
-            this.triggerEnding('ending_wallet_guard');
-        } else if (itemKey === 'safety_app') {
-            alert("🚨 [안전신문고 신고 접수 완료]\n\"불법 도로 점용 및 설문 빙자 사기로 신고했습니다.\" 포교원들이 허겁지겁 도망칩니다.");
-            this.triggerEnding('ending_police_call');
-        } else if (itemKey === 'fake_call') {
-            alert("📱 \"여보세요? 어 엄마! 지금 집 앞이야 갈게!\"\n전화를 받으며 자연스럽게 전력 질주합니다.");
-            this.triggerEnding('ending_sharp_escape');
-        }
+        const effects = {
+            airpods: ["🎧 노이즈 캔슬링 ON. 주변의 잡소리가 완벽히 차단됐다.", 'ending_ironwall'],
+            sinbul: ["💳 \"저 신용불량자고 통장 압류 들어왔는데요?\" ...상대가 눈빛을 주고받더니 조용히 사라진다.", 'ending_wallet_guard'],
+            safety_app: ["🚨 [신고 접수 완료] \"불법 점용·불안감 조성으로 신고했습니다.\" 상대가 허겁지겁 짐을 챙긴다.", 'ending_police_call'],
+            fake_call: ["📱 \"여보세요? 어 엄마! 지금 바로 갈게!\" 전화를 받으며 자연스럽게 전력 질주한다.", 'ending_sharp_escape']
+        };
+        const [msg, ending] = effects[itemKey];
+        this.appendMyMessage(msg);
+        this.showToast(`${item.icon} ${item.name} 사용!`, 'good');
+        this.later(() => this.triggerEnding(ending), 1300);
     }
 
     renderInventory() {
         const container = document.getElementById('inventory-items');
         if (!container) return;
         container.innerHTML = '';
+        const usable = this.choicesReady ? this.availableItems() : [];
 
         Object.keys(this.items).forEach(k => {
             const it = this.items[k];
+            const state = it.count <= 0 ? 'used' : usable.includes(k) ? 'available' : 'locked';
+            const badge = { used: '사용됨', available: '지금 사용!', locked: '사용 불가' }[state];
             const div = document.createElement('div');
-            div.className = `item-slot ${it.count > 0 ? 'available' : 'used'}`;
+            div.className = `item-slot ${state}`;
+            div.title = it.desc;
             div.innerHTML = `
                 <span class="item-icon">${it.icon}</span>
                 <span class="item-name">${it.name}</span>
-                <span class="item-badge">${it.count > 0 ? '1회 찬스' : '사용됨'}</span>
+                <span class="item-badge">${badge}</span>
             `;
             if (it.count > 0) {
                 div.onclick = () => this.useItem(k);
             }
             container.appendChild(div);
         });
+    }
+
+    showToast(text, kind = 'info') {
+        const toast = document.getElementById('game-toast');
+        if (!toast) return;
+        toast.innerText = text;
+        toast.className = `game-toast show ${kind}`;
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => toast.className = 'game-toast', 1800);
     }
 
     updateHUD() {
@@ -506,14 +650,23 @@ class CultSurvivalGame {
         const doubtBar = document.getElementById('doubt-bar');
         const doubtText = document.getElementById('doubt-value');
         if (doubtBar && doubtText) {
-            const clampedDoubt = Math.min(100, this.doubt);
-            doubtBar.style.width = clampedDoubt + '%';
-            doubtText.innerText = clampedDoubt + '%';
+            doubtBar.style.width = this.doubt + '%';
+            doubtText.innerText = this.doubt + '%';
         }
 
         const moneyText = document.getElementById('money-value');
         if (moneyText) {
             moneyText.innerText = this.money.toLocaleString() + '원';
+        }
+
+        // 멘탈이 낮을수록 화면이 어두워지고 심장 소리가 빨라진다
+        const app = document.getElementById('app');
+        if (app) app.classList.toggle('low-mental', this.mental <= 30);
+        const bpm = this.ended || this.mental > 30 ? 0 : this.mental <= 15 ? 120 : 95;
+        if (bpm !== this.heartBpm) {
+            this.heartBpm = bpm;
+            if (bpm) audio.startHeartbeatLoop(bpm);
+            else audio.stopHeartbeatLoop();
         }
     }
 
@@ -541,18 +694,35 @@ class CultSurvivalGame {
         btn.className = "choice-btn glitch-text-btn";
         btn.innerHTML = `<span style="color:red; font-weight:bold;">앉아 앉아 앉아 앉아 앉아</span>`;
 
-        setTimeout(() => {
-            this.triggerEnding('ending_fake_glitch');
-        }, 1200);
+        this.later(() => this.triggerEnding('ending_fake_glitch'), 1200);
+    }
+
+    // 호구력 지수: 0(철벽) ~ 100(완전 호구)
+    gullibilityScore() {
+        const mentalLoss = 100 - Math.max(0, this.mental);
+        const moneyLoss = (500000 - this.money) / 500000 * 100;
+        const raw = mentalLoss * 0.6 + moneyLoss * 0.3 + (100 - this.doubt) * 0.1;
+        return Math.round(Math.max(0, Math.min(100, raw)));
     }
 
     triggerEnding(endingId) {
+        if (this.ended) return;
+        this.ended = true;
+        this.cancelPending();
         this.clearTimer();
+        this.hideTimer();
+        this.choicesReady = false;
         audio.stopHeartbeatLoop();
+        this.heartBpm = 0;
         document.body.className = '';
+        document.getElementById('app').classList.remove('low-mental');
+        document.getElementById('minigame-modal').classList.remove('active');
 
-        const endData = ENDINGS[endingId] || ENDINGS['ending_center_114'];
+        if (!ENDINGS[endingId]) endingId = 'ending_center_114';
+        const endData = ENDINGS[endingId];
+        const isNew = !endingManager.getUnlockedEndings().includes(endingId);
         endingManager.unlock(endingId);
+        this.lastEndingId = endingId;
 
         if (endData.type === 'safe') {
             audio.playVictory();
@@ -566,15 +736,34 @@ class CultSurvivalGame {
         badge.innerText = `등급: ${endData.grade}`;
         badge.style.backgroundColor = endData.badgeColor;
 
+        document.getElementById('result-new-badge').style.display = isNew ? 'inline-block' : 'none';
         document.getElementById('result-title').innerText = endData.title;
         document.getElementById('result-subtitle').innerText = endData.subtitle;
+        document.getElementById('result-persona').innerText = ENDING_PERSONA[endingId] || '';
         document.getElementById('result-desc').innerText = endData.desc;
+
+        const score = this.gullibilityScore();
+        this.lastScore = score;
+        document.getElementById('result-score').innerText = score + '%';
+        document.getElementById('result-score-fill').style.width = score + '%';
 
         document.getElementById('stat-mental').innerText = Math.max(0, this.mental) + ' / 100';
         document.getElementById('stat-doubt').innerText = this.doubt + ' / 100';
         document.getElementById('stat-money').innerText = this.money.toLocaleString() + '원';
 
         this.updateCollectionStats();
+        this.loadResultAd();
+    }
+
+    // 숨겨진 화면에서는 광고 폭이 0이라 채워지지 않으므로, 결과 화면이 처음 보일 때 한 번만 로드
+    loadResultAd() {
+        if (this.resultAdLoaded) return;
+        this.resultAdLoaded = true;
+        try { (window.adsbygoogle = window.adsbygoogle || []).push({}); } catch (e) {}
+    }
+
+    retryChapter() {
+        this.startChapter(this.currentChapterId);
     }
 
     updateCollectionStats() {
@@ -589,6 +778,14 @@ class CultSurvivalGame {
     }
 
     switchScreen(screenId) {
+        if (screenId === 'start-screen') {
+            this.cancelPending();
+            this.clearTimer();
+            this.ended = true;
+            audio.stopHeartbeatLoop();
+            this.heartBpm = 0;
+            document.body.className = 'bg-street';
+        }
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         const target = document.getElementById(screenId);
         if (target) target.classList.add('active');

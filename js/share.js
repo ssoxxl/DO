@@ -1,4 +1,5 @@
 // 공유 및 모달 관리 (html2canvas 카드 다운로드, 링크 복사, 도감 UI)
+
 class ShareController {
     constructor() {
         this.init();
@@ -8,7 +9,7 @@ class ShareController {
         // 링크 복사
         const copyBtn = document.getElementById('btn-copy-link');
         if (copyBtn) {
-            copyBtn.onclick = () => this.copyLink();
+            copyBtn.onclick = () => this.shareResult();
         }
 
         // 이미지 카드 저장 (html2canvas)
@@ -40,12 +41,50 @@ class ShareController {
         }
     }
 
+    // 결과가 담긴 공유 URL (?r=엔딩ID&s=호구력)
+    resultUrl() {
+        const url = new URL(window.location.href);
+        url.search = '';
+        url.hash = '';
+        if (game.lastEndingId) {
+            url.searchParams.set('r', game.lastEndingId);
+            url.searchParams.set('s', game.lastScore);
+        }
+        return url.toString();
+    }
+
+    shareText() {
+        const end = ENDINGS[game.lastEndingId];
+        if (!end) return "도를 아십니까? 길거리 사이비 생존 시뮬레이션";
+        return `나는 [${end.grade}등급] ${end.title} · 호구력 ${game.lastScore}%\n${ENDING_PERSONA[game.lastEndingId] || ''}\n너는 사이비한테서 살아남을 수 있어? 👁️`;
+    }
+
+    // 결과 문구 + 도전장 링크를 클립보드에 복사
+    shareResult() {
+        this.copyLink(`${this.shareText()}\n${this.resultUrl()}`);
+    }
+
+    // 친구 결과 링크로 들어온 경우 시작 화면에 도전장 표시
+    showIncomingChallenge() {
+        const params = new URLSearchParams(window.location.search);
+        const end = ENDINGS[params.get('r')];
+        const box = document.getElementById('challenge-banner');
+        if (!end || !box) return;
+        const score = parseInt(params.get('s'), 10);
+        box.innerHTML = `
+            <div class="challenge-label">👀 친구가 보낸 도전장</div>
+            <div class="challenge-title">[${end.grade}등급] ${end.title}${isNaN(score) ? '' : ` · 호구력 ${score}%`}</div>
+            <div class="challenge-sub">당신은 이 친구보다 잘 버틸 수 있을까요? 아래에서 시나리오를 골라보세요!</div>
+        `;
+        box.style.display = 'block';
+    }
+
     // 링크 클립보드 복사
-    copyLink() {
-        const url = window.location.href;
+    copyLink(textOverride) {
+        const url = typeof textOverride === 'string' ? textOverride : this.resultUrl();
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(url).then(() => {
-                alert("🔗 테스트 링크가 클립보드에 복사되었습니다!\n친구에게 공유해서 호구력을 테스트해보세요.");
+                game.showToast("🔗 테스트 링크가 클립보드에 복사되었습니다!\n친구에게 공유해서 호구력을 테스트해보세요.");
             }).catch(() => {
                 this.fallbackCopy(url);
             });
@@ -61,7 +100,7 @@ class ShareController {
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        alert("🔗 링크가 복사되었습니다!");
+        game.showToast("🔗 링크가 복사되었습니다!");
     }
 
     // 결과 화면 카드 이미지 생성 (html2canvas)
@@ -70,7 +109,7 @@ class ShareController {
         if (!cardArea) return;
 
         if (typeof html2canvas === 'undefined') {
-            alert("이미지 생성 라이브러리를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
+            game.showToast("이미지 생성 라이브러리를 불러오는 중입니다. 잠시 후 다시 시도해주세요.");
             return;
         }
 
@@ -95,7 +134,7 @@ class ShareController {
             console.error(err);
             btn.innerText = origText;
             btn.disabled = false;
-            alert("이미지 저장 중 오류가 발생했습니다. 화면을 캡처해서 공유해보세요!");
+            game.showToast("이미지 저장 중 오류가 발생했습니다. 화면을 캡처해서 공유해보세요!");
         });
     }
 
@@ -151,3 +190,4 @@ class ShareController {
 }
 
 const shareController = new ShareController();
+shareController.showIncomingChallenge();

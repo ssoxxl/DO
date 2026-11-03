@@ -1,4 +1,4 @@
-// 엔딩 도감 및 등급 정의 (12가지 멀티 엔딩)
+// 엔딩 도감 및 등급 정의 (15가지 멀티 엔딩)
 const ENDINGS = {
     // S등급 (완벽 대처 & 참교육)
     ending_ironwall: {
@@ -28,8 +28,26 @@ const ENDINGS = {
         badgeColor: "#00ffcc",
         type: "safe"
     },
+    ending_zoom_evidence: {
+        id: "ending_zoom_evidence",
+        grade: "S",
+        title: "증거 수집 탐정",
+        subtitle: "캡처 금지? 녹화 버튼부터 누른 디지털 네이티브",
+        desc: "\"캡처는 절대 안 돼요\"라는 말에 오히려 화면 녹화를 켰습니다. 위장 모임들의 연결고리와 줌 녹화본을 탈퇴자 커뮤니티와 상담소에 제보해, 같은 크루에 갓 들어온 신입 3명이 빠져나올 수 있었습니다.",
+        badgeColor: "#00ffcc",
+        type: "safe"
+    },
 
     // A등급 (현명한 손절 & 지갑 사수)
+    ending_crew_exit: {
+        id: "ending_crew_exit",
+        grade: "A",
+        title: "러닝크루 칼퇴러",
+        subtitle: "달리기는 남기고 포교는 차단한 손절의 달인",
+        desc: "다정한 DM과 무료 상담이 이상하게 딱딱 맞아떨어지는 순간 위화감을 믿었습니다. 오픈채팅방을 나가고 전원 차단. 이제는 진짜 러닝크루에서 혼자 페이스를 즐기고 있습니다.",
+        badgeColor: "#33ff33",
+        type: "safe"
+    },
     ending_sharp_escape: {
         id: "ending_sharp_escape",
         grade: "A",
@@ -86,7 +104,7 @@ const ENDINGS = {
     ending_center_114: {
         id: "ending_center_114",
         grade: "F",
-        title: "시온센터 114기 신입",
+        title: "새벽센터 114기 신입",
         subtitle: "월화목금 매일 3시간... 거짓말을 거룩한 '모략'이라 믿는 삶",
         desc: "복음방을 거쳐 6개월 센터 과정에 등록했습니다. 매일 아침 흰 셔츠에 검은 슬랙스를 입고 길거리에 나가 '웹툰 설문조사'를 위장한 모략 전도를 시작합니다. 휴대폰은 텔레그램으로 감시당합니다.",
         badgeColor: "#ff0000",
@@ -98,6 +116,15 @@ const ENDINGS = {
         title: "영혼의 잎사귀",
         subtitle: "사랑의 폭탄(Love-Bombing)에 녹아내려 가족과 절연",
         desc: "\"너를 진심으로 사랑해 주는 건 우리뿐이야. 가족도 마귀가 틈타면 적이 돼.\" 가스라이팅에 굴복하여 부모님과 친구들의 연락을 모두 차단하고 합숙소 생활을 시작했습니다.",
+        badgeColor: "#ff0000",
+        type: "danger"
+    },
+    ending_crew_center: {
+        id: "ending_crew_center",
+        grade: "F",
+        title: "회비 0원의 대가",
+        subtitle: "러닝화 대신 흰 셔츠를 입고 오픈채팅방을 여는 사람",
+        desc: "회사 앞에서 울먹이는 하은을 보고 다시 마음이 약해졌습니다. 이제 당신은 '초보환영 회비 0원' 오픈채팅방의 새 방장이 되어, 지칠 대로 지친 직장인들에게 먼저 DM을 보내고 있습니다.",
         badgeColor: "#ff0000",
         type: "danger"
     },
@@ -121,6 +148,25 @@ const ENDINGS = {
         badgeColor: "#bf00ff",
         type: "danger"
     }
+};
+
+// 공유 카드용 유형 라벨 (엔딩별 한 줄 캐릭터)
+const ENDING_PERSONA = {
+    ending_ironwall: "🧊 눈빛으로 결계 치는 냉동인간형",
+    ending_police_call: "⚖️ 법전 들고 다니는 참교육형",
+    ending_reverse_preach: "🌀 상대를 역으로 세뇌하는 혼돈형",
+    ending_zoom_evidence: "🕵️ 캡처부터 하는 증거수집형",
+    ending_sharp_escape: "🏃 위화감 오면 바로 튀는 생존본능형",
+    ending_wallet_guard: "💳 영혼은 줘도 돈은 못 주는 짠돌이형",
+    ending_crew_exit: "✂️ 손절이 빠른 쿨한 차단형",
+    ending_awkward_escape: "😮‍💨 착해서 2시간 붙잡히는 거절못함형",
+    ending_dating_scam: "💔 사랑에 약한 로맨티스트형",
+    ending_ancestor_debt: "🕯️ 조상님 얘기에 약한 효자효녀형",
+    ending_center_114: "📋 설문조사 1분을 못 거절하는 친절형",
+    ending_cult_leaf: "🍃 칭찬 한 마디에 녹는 인정욕구형",
+    ending_crew_center: "👟 다정한 DM에 무너지는 외로움형",
+    ending_broke: "💸 영끌까지 바치는 올인형",
+    ending_fake_glitch: "👁️ 이미 늦어버린 의식붕괴형"
 };
 
 // 로컬스토리지 엔딩 관리
